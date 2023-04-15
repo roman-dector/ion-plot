@@ -1,12 +1,14 @@
 [tool.poetry]
 name = "plot"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["roman-dector <roman.schaposhnikov@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
+dal = { git = "git@github.com:roman-dector/ion-dal.git", branch = "main" }
 suntime = { git = "git@github.com:roman-dector/suntime.git", branch = "master" }
+pandas = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 

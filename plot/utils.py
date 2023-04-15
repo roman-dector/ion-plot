@@ -1,5 +1,15 @@
 from datetime import datetime
+from calendar import monthrange
+
+import pandas as pd
 from suntime import Sun, SunTimeException
+
+from dal.models import(
+    IonData,
+    transform_data,
+    select_middle_lat_stations,
+)
+
 
 def get_sunrise_sunset(date, coords):
     sun = Sun(coords['lat'], coords['long'])
@@ -12,4 +22,16 @@ def get_sunrise_sunset(date, coords):
         return sunrise, sunset
     except SunTimeException as e:
         print(f"Error: {e}")
+
+
+def cast_data_to_dataframe(data: IonData, columns: list[str]) -> pd.DataFrame:
+    return pd.DataFrame(transform_data(data), columns=columns)
+
+
+def convert_iso_to_day_of_year(date: str) -> int:
+    return datetime.strptime(date, '%Y-%m-%d').timetuple().tm_yday
+
+
+def get_month_days_count(month: int, year: int=2019) -> int:
+    return monthrange(year, month)[1]
 
