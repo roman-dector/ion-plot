@@ -2,7 +2,12 @@ from datetime import datetime
 from calendar import monthrange
 
 import pandas as pd
+import statsmodels.api as sm
+
 from suntime import Sun, SunTimeException
+from statsmodels.regression.linear_model import (
+    RegressionResultsWrapper as RRW
+)
 
 from dal.models import(
     IonData,
@@ -34,4 +39,9 @@ def convert_iso_to_day_of_year(date: str) -> int:
 
 def get_month_days_count(month: int, year: int=2019) -> int:
     return monthrange(year, month)[1]
+
+
+def make_linear_regression(y: list[float], x: list[float]) -> RRW:
+    sm.add_constant(x)
+    return sm.OLS(y, x).fit()
 
