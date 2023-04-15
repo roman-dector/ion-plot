@@ -16,6 +16,29 @@ from dal.models import(
 )
 
 
+#from astral import LocationInfo
+#from astral.sun import sun
+#from astral.location import Location
+#
+#
+#l = LocationInfo('', '', '', 30.4, 262.3)
+## l.timezone = 'US/Central'
+## l.latitude = 30.4
+## l.longitude = 262.3
+#
+#print(l)
+#
+## s = sun(city.observer, date=datetime.date(2009, 4, 22))
+## print((
+##     f'Dawn:    {s["dawn"]}\n'
+#
+##     f'Sunrise: {s["sunrise"]}\n'
+##     f'Noon:    {s["noon"]}\n'
+##     f'Sunset:  {s["sunset"]}\n'
+##     f'Dusk:    {s["dusk"]}\n'
+## ))
+
+
 def get_sunrise_sunset(date, coords):
     sun = Sun(coords['lat'], coords['long'])
     abd = datetime.strptime(date, '%Y-%m-%d').date()
@@ -31,6 +54,20 @@ def get_sunrise_sunset(date, coords):
 
 def cast_data_to_dataframe(data: IonData, columns: list[str]) -> pd.DataFrame:
     return pd.DataFrame(transform_data(data), columns=columns)
+
+
+def split_df_to_sun_moon(df, ursi, date):
+    sunrise, sunset = get_sunrise_sunset(date, select_coords_by_ursi(ursi))
+    hour = df['hour']
+    
+    if sunrise < sunset:
+        sun = df[(hour >= sunrise) & (hour < sunset)]
+        moon = df[(hour < sunrise) | (hour >= sunset)]
+    else:
+        sun = df[(hour >= sunrise) | (hour < sunset)]
+        moon = df[(hour < sunrise) & (hour >= sunset)]
+        
+    return sun, moon
 
 
 def convert_iso_to_day_of_year(date: str) -> int:
