@@ -54,7 +54,7 @@ def plot_tec_b0_graph(
     plot_linear_graph(
         ax[1], moon, 'tec', 'b0', 'TEC', 'B0',
         'Moon ' + date, color='purple', edgecolor='b',
-        regression=regression, const=const,
+        regression=regression, const=const, moon=True,
     )
     return ax
 

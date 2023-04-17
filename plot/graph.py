@@ -27,15 +27,20 @@ def plot_graph(
         edgecolor: str='g',
         regression: bool=True,
         const: bool=False,
+        moon: bool=False,
 ) -> Ax:
     if regression:
-        reg = make_linear_regression(y_ax, x_ax, const)
-        linspace = np.linspace(0, max(x_ax), 100)
-        ax.plot(linspace, reg.predict(sm.add_constant(linspace)), c=edgecolor)
+        if moon:
+            reg = make_linear_regression(x_ax, y_ax, const)
+            linspace = np.linspace(0, max(y_ax), 100)
+        else:
+            reg = make_linear_regression(y_ax, x_ax, const)
+            linspace = np.linspace(0, max(x_ax), 100)
 
+        ax.plot(linspace, reg.predict(sm.add_constant(linspace)), c=edgecolor)
         ax.set_title(
-            f"{title}, k={round(reg.params[1], 3)}, k_err={round(reg.bse[1], 3)}\n\
-            , const={round(reg.params[0], 3)}, const_err={round(reg.bse[0], 3)}",
+            f"{title}, k={round(reg.params[1], 3)}, k_err={round(reg.bse[1], 3)},\n\
+            const={round(reg.params[0], 3)}, const_err={round(reg.bse[0], 3)}",
             fontsize=15,
         )
     else:
@@ -61,11 +66,12 @@ def plot_linear_graph(
         edgecolor: str='g',
         regression: bool=True,
         const: bool=False,
+        moon: bool=False,
 ) -> Ax:
     x_ax = df[x_name]
     y_ax = df[y_name]
 
     return plot_graph(
             ax, x_ax, y_ax, x_label, y_label, title, color,
-            edgecolor, regression, const,
+            edgecolor, regression, const, moon,
     )
