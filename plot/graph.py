@@ -33,7 +33,8 @@ def plot_graph(
         ax.plot(linspace, reg.predict(linspace), c=edgecolor)
 
         ax.set_title(
-            f"{title}, k={round(reg.params[0], 3)}, err={round(reg.bse[0], 3)}",
+            f"{title}, k={round(reg.params[0], 3)}, err={round(reg.bse[0], 3)}\
+            , $tec_0={reg.tvalues[0]}$",
             fontsize=15,
         )
     else:

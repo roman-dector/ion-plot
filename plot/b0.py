@@ -25,12 +25,18 @@ def plot_tec_b0_graph(
         split: bool=True,
         xlim=(None, None),
         ylim=(None, None),
+        regression: bool=True,
+        const: bool=False,
 ):
     if not split:
         _, ax = plt.subplots(nrows=1, ncols=1, figsize=(15,10))
         # ax.set_xlim(xlim[0], xlim[1])
         # ax.set_ylim(ylim[0], ylim[1])
-        plot_linear_graph(ax, pd.concat([sun, moon]), 'tec', 'b0', 'TEC', 'B0', date)
+        plot_linear_graph(
+            ax, pd.concat([sun, moon]),
+            'tec', 'b0', 'TEC', 'B0',
+            date, regression=regression, const=const,
+        )
         return ax
 
     _, ax = plt.subplots(nrows=1, ncols=2, figsize=(15,6))
@@ -43,10 +49,12 @@ def plot_tec_b0_graph(
     plot_linear_graph(
         ax[0], sun, 'tec', 'b0', 'TEC', 'B0',
         'Sun ' + date, color='orange', edgecolor='r',
+        regression=regression, const=const,
     )
     plot_linear_graph(
         ax[1], moon, 'tec', 'b0', 'TEC', 'B0',
         'Moon ' + date, color='purple', edgecolor='b',
+        regression=regression, const=const,
     )
     return ax
 
@@ -128,7 +136,7 @@ def plot_tec_b0_for_day_graph(
     if ax != None:
         subplot_tec_b0_graph(sun, moon, date, ax, split, xlim, ylim, regression, const)
     else:
-        plot_tec_b0_graph(sun, moon, date, split, xlim, ylim)
+        plot_tec_b0_graph(sun, moon, date, split, xlim, ylim, regression, const)
     
     
 def plot_tec_b0_for_each_day_in_month_graph(
