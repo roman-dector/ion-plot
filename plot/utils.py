@@ -78,7 +78,12 @@ def get_month_days_count(month: int, year: int=2019) -> int:
     return monthrange(year, month)[1]
 
 
-def make_linear_regression(y: list[float], x: list[float]) -> RRW:
-    sm.add_constant(x)
+def make_linear_regression(
+        y: list[float],
+        x: list[float],
+        const: bool,
+) -> RRW:
+    if const: sm.add_constant(x)
+
     return sm.OLS(y, x).fit()
 

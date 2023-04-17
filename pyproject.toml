@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "plot"
-version = "0.1.3"
+version = "0.1.4"
 description = ""
 authors = ["roman-dector <roman.schaposhnikov@gmail.com>"]
 
@@ -10,6 +10,7 @@ dal = { git = "git@github.com:roman-dector/ion-dal.git", branch = "main" }
 suntime = { git = "git@github.com:roman-dector/suntime.git", branch = "master" }
 pandas = "^2.0.0"
 statsmodels = "^0.13.5"
+matplotlib = "^3.7.1"
 
 [tool.poetry.dev-dependencies]
 
