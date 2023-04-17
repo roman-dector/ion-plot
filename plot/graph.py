@@ -37,7 +37,7 @@ def plot_graph(
             reg = make_linear_regression(y_ax, x_ax, const)
             linspace = np.linspace(0, max(x_ax), 100)
 
-        ax.plot(linspace, reg.predict(sm.add_constant(linspace)), c=edgecolor)
+        ax.plot(reg.predict(sm.add_constant(linspace)), linspace, c=edgecolor)
         ax.set_title(
             f"{title}, k={round(reg.params[1], 3)}, k_err={round(reg.bse[1], 3)},\n\
             const={round(reg.params[0], 3)}, const_err={round(reg.bse[0], 3)}",
