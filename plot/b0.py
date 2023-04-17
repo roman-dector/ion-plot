@@ -72,13 +72,9 @@ def subplot_tec_b0_graph(
 ) -> Ax:
     if not split:
         ax = plot_linear_graph(
-            ax,
-            pd.concat([sun, moon]),
-            'tec',
-            'b0',
-            'TEC',
-            'B0',
-            date,
+            ax, pd.concat([sun, moon]),
+            'tec', 'b0', 'TEC', 'B0', date,
+            regression=regression, const=const,
         )
         ax.set_xlim(xlim[0], xlim[1])
         ax.set_ylim(ylim[0], ylim[1])
@@ -98,11 +94,13 @@ def subplot_tec_b0_graph(
 
     ax = plot_linear_graph(
         ax, sun, 'tec', 'b0', 'TEC', 'B0',
-        'Sun ' + date, color='orange', edgecolor='r', const=const,
+        'Sun ' + date, color='orange', edgecolor='r',
+        regression=regression, const=const,
     )
     ax = plot_linear_graph(
         ax, moon, 'tec', 'b0', 'TEC', 'B0',
-        'Moon ' + date, color='purple', edgecolor='b', const=const,
+        'Moon ' + date, color='purple', edgecolor='b',
+        regression=regression, const=const,
     )
 
     return ax
