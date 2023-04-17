@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.axis.Axis as Ax
+import matplotlib.axes as Ax
 
 from pandas import DataFrame as DF
 
