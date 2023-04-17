@@ -31,7 +31,7 @@ def plot_tec_b0_graph(
         ax.set_xlim(xlim[0], xlim[1])
         ax.set_ylim(ylim[0], ylim[1])
         plot_linear_graph(ax, pd.concat([sun, moon]), 'tec', 'b0', 'TEC', 'B0', date)
-        return
+        return ax
 
     _, ax = plt.subplots(nrows=1, ncols=2, figsize=(15,6))
 
@@ -48,6 +48,7 @@ def plot_tec_b0_graph(
         ax[1], moon, 'tec', 'b0', 'TEC', 'B0',
         'Moon ' + date, color='purple', edgecolor='b',
     )
+    return ax
 
     
 def subplot_tec_b0_graph(
