@@ -61,14 +61,14 @@ def subplot_tec_b0_graph(
         regression: bool=True,
         const: bool=False,
 ) -> Ax:
-    if split:
+    if not split:
         ax = plot_linear_graph(ax, pd.concat([sun, moon]), 'tec', 'b0', 'TEC', 'B0', date)
         ax.set_xlim(xlim[0], xlim[1])
         ax.set_ylim(ylim[0], ylim[1])
         return ax
 
-    x_sun, y_sun = sun['tec'], sun['b0']
-    x_moon, y_moon = moon['tec'], moon['b0']
+    # x_sun, y_sun = sun['tec'], sun['b0']
+    # x_moon, y_moon = moon['tec'], moon['b0']
     
     ax.set_xlim(xlim[0], xlim[1])
     ax.set_ylim(ylim[0], ylim[1])
@@ -95,7 +95,7 @@ def plot_tec_b0_for_day_graph(
     ursi: str,
     date: str,
     ax = None,
-    split = False,
+    split = True,
     xlim=(None, None),
     ylim=(None, None),
     regression: bool=True,
@@ -125,7 +125,7 @@ def plot_tec_b0_for_day_graph(
 def plot_tec_b0_for_each_day_in_month_graph(
     ursi: str,
     month: int,
-    split=False,
+    split=True,
     xlim=(None, None),
     ylim=(None, None),
     regression: bool=True,
