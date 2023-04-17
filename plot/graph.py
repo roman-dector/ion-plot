@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import statsmodels.api as sm
 
 from matplotlib.axis import Axis as Ax
 from pandas import DataFrame as DF
@@ -30,15 +31,13 @@ def plot_graph(
     if regression:
         reg = make_linear_regression(y_ax, x_ax, const)
         linspace = np.linspace(0, max(x_ax), 100)
-        ax.plot(linspace, reg.predict(linspace), c=edgecolor)
+        ax.plot(linspace, reg.predict(sm.add_constant(linspace)), c=edgecolor)
 
-        # ax.set_title(
-        #     f"{title}, k={round(reg.params[0], 3)}, err={round(reg.bse[0], 3)}\
-        #     , $tec_0={reg.tvalues[0]}$",
-        #     fontsize=15,
-        # )
-        ax.set_title(f"{title}, sum={reg.params}", fontsize=15)
-        print(reg.summary())
+        ax.set_title(
+            f"{title}, k={round(reg.params[0], 3)}, err={round(reg.bse[0], 3)}\
+            , $tec_0={reg.params[1]}$",
+            fontsize=15,
+        )
     else:
         ax.set_title(f"{title}", fontsize=15)
     
