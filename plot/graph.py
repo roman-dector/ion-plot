@@ -34,8 +34,8 @@ def plot_graph(
         ax.plot(linspace, reg.predict(sm.add_constant(linspace)), c=edgecolor)
 
         ax.set_title(
-            f"{title}, k={round(reg.params[0], 3)}, k_err={round(reg.bse[0], 3)}\n\
-            , $tec_0$={reg.params[1]}, $tec_0$_err={reg.bse[1]}",
+            f"{title}, k={round(reg.params[1], 3)}, k_err={round(reg.bse[1], 3)}\n\
+            , const={round(reg.params[0], 3)}, const_err={round(reg.bse[0], 3)}",
             fontsize=15,
         )
     else:
