@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.axes as Ax
 
+from matplotlib.axis import Axis as Ax
 from pandas import DataFrame as DF
 
 from plot.utils import make_linear_regression
@@ -21,7 +21,7 @@ def plot_graph(
         y_ax: list,
         x_label: str,
         y_label: str,
-        date: str,
+        title: str,
         color: str='y',
         edgecolor: str='g',
         regression: bool=True,
@@ -33,11 +33,11 @@ def plot_graph(
         ax.plot(linspace, reg.predict(linspace), c=edgecolor)
 
         ax.set_title(
-            f"{date}, k={round(reg.params[0], 3)}, err={round(reg.bse[0], 3)}",
+            f"{title}, k={round(reg.params[0], 3)}, err={round(reg.bse[0], 3)}",
             fontsize=15,
         )
     else:
-        ax.set_title(f"{date}", fontsize=15)
+        ax.set_title(f"{title}", fontsize=15)
     
     ax.set_xlabel(x_label, fontsize=15)
     ax.set_ylabel(y_label, fontsize=15)
@@ -54,7 +54,7 @@ def plot_linear_graph(
         y_name: str,
         x_label: str,
         y_label: str,
-        date: str,
+        title: str,
         color: str='y',
         edgecolor: str='g',
         regression: bool=True,
@@ -64,7 +64,7 @@ def plot_linear_graph(
     y_ax = df[y_name]
 
     return plot_graph(
-            ax, x_ax, y_ax, x_label, y_label, date, color,
+            ax, x_ax, y_ax, x_label, y_label, title, color,
             edgecolor, regression, const,
     )
 

@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.axes as Ax
+from matplotlib.axis import Axis as Ax
 
 from pandas import DataFrame as DF
 
@@ -62,7 +62,15 @@ def subplot_tec_b0_graph(
         const: bool=False,
 ) -> Ax:
     if not split:
-        ax = plot_linear_graph(ax, pd.concat([sun, moon]), 'tec', 'b0', 'TEC', 'B0', date)
+        ax = plot_linear_graph(
+            ax,
+            pd.concat([sun, moon]),
+            'tec',
+            'b0',
+            'TEC',
+            'B0',
+            date,
+        )
         ax.set_xlim(xlim[0], xlim[1])
         ax.set_ylim(ylim[0], ylim[1])
         return ax
@@ -117,7 +125,7 @@ def plot_tec_b0_for_day_graph(
         moon = df[(hour < sunrise) & (hour >= sunset)]
 
     if ax != None:
-        subplot_tec_b0_graph(sun, moon, date, ax, split, xlim, ylim, const)
+        subplot_tec_b0_graph(sun, moon, date, ax, split, xlim, ylim, regression, const)
     else:
         plot_tec_b0_graph(sun, moon, date, split, xlim, ylim)
     
