@@ -79,8 +79,8 @@ def subplot_tec_b0_graph(
     # x_sun, y_sun = sun['tec'], sun['b0']
     # x_moon, y_moon = moon['tec'], moon['b0']
     
-    ax.set_xlim(xlim[0], xlim[1])
-    ax.set_ylim(ylim[0], ylim[1])
+    # ax.set_xlim(xlim[0], xlim[1])
+    # ax.set_ylim(ylim[0], ylim[1])
 #    ax.set_title(
 #        f"{date},\n\
 #        k_sun={round(reg_sun.params[0], 3)}, err={round(reg_sun.bse[0], 3)}\n\
