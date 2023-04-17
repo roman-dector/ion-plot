@@ -9,9 +9,10 @@ from dal import select_coords_by_ursi
 
 from plot.graph import plot_linear_graph
 from plot.utils import (
-        make_linear_regression,
         cast_data_to_dataframe,
         get_month_days_count,
+        get_sunrise_sunset,
+        select_hour_avr_for_day,
 )
 
 
@@ -150,12 +151,12 @@ def plot_tec_b0_for_each_day_in_month_graph(
     fig.suptitle(suptitle, fontsize=20, y=0.92)
     
     for day in range(1, get_month_days_count(month) + 1):
+        str_month = f'0{month}' if month < 10 else f'{month}'
+        str_day = f'0{day}' if day < 10 else f'{day}'
         try:
-            str_month = f'0{month}' if month < 10 else f'{month}'
-            str_day = f'0{day}' if day < 10 else f'{day}'
             plot_tec_b0_for_day_graph(
                 ursi, f"2019-{str_month}-{str_day}",
                 axes[day - 1], split, xlim, ylim, regression, const,
             )
-        except:
-            continue
+        except Exception as ex:
+            print(ex)
