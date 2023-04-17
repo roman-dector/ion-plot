@@ -84,7 +84,7 @@ def make_linear_regression(
         x: list[float],
         const: bool,
 ) -> RRW:
-    if const: x = sm.add_constant(x)
+    # if const: x = sm.add_constant(x)
 
     return sm.OLS(y, x).fit()
 

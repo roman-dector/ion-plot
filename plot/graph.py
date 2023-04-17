@@ -32,11 +32,13 @@ def plot_graph(
         linspace = np.linspace(0, max(x_ax), 100)
         ax.plot(linspace, reg.predict(linspace), c=edgecolor)
 
-        ax.set_title(
-            f"{title}, k={round(reg.params[0], 3)}, err={round(reg.bse[0], 3)}\
-            , $tec_0={reg.tvalues[0]}$",
-            fontsize=15,
-        )
+        # ax.set_title(
+        #     f"{title}, k={round(reg.params[0], 3)}, err={round(reg.bse[0], 3)}\
+        #     , $tec_0={reg.tvalues[0]}$",
+        #     fontsize=15,
+        # )
+        ax.set_title(f"{title}, sum={reg.params}", fontsize=15)
+        print(reg.summary())
     else:
         ax.set_title(f"{title}", fontsize=15)
     
