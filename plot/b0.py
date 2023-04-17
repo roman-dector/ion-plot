@@ -100,7 +100,7 @@ def subplot_tec_b0_graph(
     ax = plot_linear_graph(
         ax, moon, 'tec', 'b0', 'TEC', 'B0',
         'Moon ' + date, color='purple', edgecolor='b',
-        regression=regression, const=const,
+        regression=regression, const=const, moon=True,
     )
 
     return ax
