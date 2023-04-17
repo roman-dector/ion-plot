@@ -9,6 +9,7 @@ from statsmodels.regression.linear_model import (
     RegressionResultsWrapper as RRW
 )
 
+from dal import select_coords_by_ursi
 from dal.models import(
     IonData,
     transform_data,

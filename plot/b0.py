@@ -5,14 +5,16 @@ import matplotlib.axes as Ax
 
 from pandas import DataFrame as DF
 
-from dal import select_coords_by_ursi 
+from dal import (
+    select_coords_by_ursi,
+    select_hour_avr_for_day,
+)
 
 from plot.graph import plot_linear_graph
 from plot.utils import (
         cast_data_to_dataframe,
         get_month_days_count,
         get_sunrise_sunset,
-        select_hour_avr_for_day,
 )
 
 
