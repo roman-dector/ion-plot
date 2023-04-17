@@ -35,10 +35,10 @@ def plot_tec_b0_graph(
 
     _, ax = plt.subplots(nrows=1, ncols=2, figsize=(15,6))
 
-    ax[0].set_xlim(xlim[0], xlim[1])
-    ax[0].set_ylim(ylim[0], ylim[1])
-    ax[1].set_xlim(xlim[0], xlim[1])
-    ax[1].set_ylim(ylim[0], ylim[1])
+    # ax[0].set_xlim(xlim[0], xlim[1])
+    # ax[0].set_ylim(ylim[0], ylim[1])
+    # ax[1].set_xlim(xlim[0], xlim[1])
+    # ax[1].set_ylim(ylim[0], ylim[1])
 
     plot_linear_graph(
         ax[0], sun, 'tec', 'b0', 'TEC', 'B0',
