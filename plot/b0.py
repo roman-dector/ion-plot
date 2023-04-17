@@ -28,8 +28,8 @@ def plot_tec_b0_graph(
 ):
     if not split:
         _, ax = plt.subplots(nrows=1, ncols=1, figsize=(15,10))
-        ax.set_xlim(xlim[0], xlim[1])
-        ax.set_ylim(ylim[0], ylim[1])
+        # ax.set_xlim(xlim[0], xlim[1])
+        # ax.set_ylim(ylim[0], ylim[1])
         plot_linear_graph(ax, pd.concat([sun, moon]), 'tec', 'b0', 'TEC', 'B0', date)
         return ax
 
