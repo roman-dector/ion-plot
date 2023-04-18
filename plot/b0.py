@@ -120,7 +120,7 @@ def plot_tec_b0_for_day_graph(
         select_hour_avr_for_day(ursi, date),
         columns=['hour', 'f0f2', 'tec', 'b0'],
     )
-    
+
     sunrise, sunset = get_sunrise_sunset(date, select_coords_by_ursi(ursi))
     hour = df['hour']
     
@@ -135,8 +135,8 @@ def plot_tec_b0_for_day_graph(
         subplot_tec_b0_graph(sun, moon, date, ax, split, xlim, ylim, regression, const)
     else:
         plot_tec_b0_graph(sun, moon, date, split, xlim, ylim, regression, const)
-    
-    
+
+
 def plot_tec_b0_for_each_day_in_month_graph(
     ursi: str,
     month: int,
