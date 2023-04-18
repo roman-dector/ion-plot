@@ -17,7 +17,7 @@ from plot.utils import (
 )
 
 
-def plot_tec_b0_graph(
+def plot_tec_f0f2_graph(
         sun: DF,
         moon: DF,
         date: str,
@@ -33,7 +33,7 @@ def plot_tec_b0_graph(
         # ax.set_ylim(ylim[0], ylim[1])
         plot_linear_graph(
             ax, pd.concat([sun, moon]),
-            'tec', 'b0', 'TEC', 'B0',
+            'tec', 'f0f2', 'TEC', '$f_0F_2$',
             date, regression=regression, const=const,
         )
         return ax
@@ -46,12 +46,12 @@ def plot_tec_b0_graph(
     # ax[1].set_ylim(ylim[0], ylim[1])
 
     plot_linear_graph(
-        ax[0], sun, 'tec', 'b0', 'TEC', 'B0',
+        ax[0], sun, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
         'Sun ' + date, color='orange', edgecolor='r',
         regression=regression, const=const,
     )
     plot_linear_graph(
-        ax[1], moon, 'tec', 'b0', 'TEC', 'B0',
+        ax[1], moon, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
         'Moon ' + date, color='purple', edgecolor='b',
         regression=regression, const=const, moon=True,
     )
@@ -72,32 +72,23 @@ def subplot_tec_b0_graph(
     if not split:
         ax = plot_linear_graph(
             ax, pd.concat([sun, moon]),
-            'tec', 'b0', 'TEC', 'B0', date,
+            'tec', 'f0f2', 'TEC', '$f_0F_2$', date,
             regression=regression, const=const,
         )
         ax.set_xlim(xlim[0], xlim[1])
         ax.set_ylim(ylim[0], ylim[1])
         return ax
 
-    # x_sun, y_sun = sun['tec'], sun['b0']
-    # x_moon, y_moon = moon['tec'], moon['b0']
-    
     # ax.set_xlim(xlim[0], xlim[1])
     # ax.set_ylim(ylim[0], ylim[1])
-#    ax.set_title(
-#        f"{date},\n\
-#        k_sun={round(reg_sun.params[0], 3)}, err={round(reg_sun.bse[0], 3)}\n\
-#        k_moon={round(reg_moon.params[0], 3)}, err={round(reg_moon.bse[0], 3)}",
-#        fontsize=15,
-#    )
 
     ax = plot_linear_graph(
-        ax, sun, 'tec', 'b0', 'TEC', 'B0',
+        ax, sun, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
         'Sun ' + date, color='orange', edgecolor='r',
         regression=regression, const=const,
     )
     ax = plot_linear_graph(
-        ax, moon, 'tec', 'b0', 'TEC', 'B0',
+        ax, moon, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
         'Moon ' + date, color='purple', edgecolor='b',
         regression=regression, const=const, moon=True,
     )
