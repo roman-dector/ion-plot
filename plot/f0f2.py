@@ -58,7 +58,7 @@ def plot_tec_f0f2_graph(
     return ax
 
     
-def subplot_tec_b0_graph(
+def subplot_tec_f0f2_graph(
         sun: DF,
         moon: DF,
         date: str,
@@ -96,7 +96,7 @@ def subplot_tec_b0_graph(
     return ax
 
 
-def plot_tec_b0_for_day_graph(
+def plot_tec_f0f2_for_day_graph(
     ursi: str,
     date: str,
     ax = None,
@@ -122,12 +122,12 @@ def plot_tec_b0_for_day_graph(
         moon = df[(hour < sunrise) & (hour >= sunset)]
 
     if ax != None:
-        subplot_tec_b0_graph(sun, moon, date, ax, split, xlim, ylim, regression, const)
+        subplot_tec_f0f2_graph(sun, moon, date, ax, split, xlim, ylim, regression, const)
     else:
-        plot_tec_b0_graph(sun, moon, date, split, xlim, ylim, regression, const)
+        plot_tec_f0f2_graph(sun, moon, date, split, xlim, ylim, regression, const)
 
 
-def plot_tec_b0_for_each_day_in_month_graph(
+def plot_tec_f0f2_for_each_day_in_month_graph(
     ursi: str,
     month: int,
     split=True,
@@ -161,7 +161,7 @@ def plot_tec_b0_for_each_day_in_month_graph(
         str_month = f'0{month}' if month < 10 else f'{month}'
         str_day = f'0{day}' if day < 10 else f'{day}'
         try:
-            plot_tec_b0_for_day_graph(
+            plot_tec_f0f2_for_day_graph(
                 ursi, f"2019-{str_month}-{str_day}",
                 axes[day - 1], split, xlim, ylim, regression, const,
             )
