@@ -9,7 +9,7 @@ from dal import (
     select_hour_avr_for_day,
 )
 
-from plot.graph import plot_linear_graph
+from plot.graph import plot_squared_graph
 from plot.utils import (
         cast_data_to_dataframe,
         get_month_days_count,
@@ -31,7 +31,7 @@ def plot_tec_f0f2_graph(
         _, ax = plt.subplots(nrows=1, ncols=1, figsize=(15,10))
         # ax.set_xlim(xlim[0], xlim[1])
         # ax.set_ylim(ylim[0], ylim[1])
-        plot_linear_graph(
+        plot_squared_graph(
             ax, pd.concat([sun, moon]),
             'tec', 'f0f2', 'TEC', '$f_0F_2$',
             date, regression=regression, const=const,
@@ -45,12 +45,12 @@ def plot_tec_f0f2_graph(
     # ax[1].set_xlim(xlim[0], xlim[1])
     # ax[1].set_ylim(ylim[0], ylim[1])
 
-    plot_linear_graph(
+    plot_squared_graph(
         ax[0], sun, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
         'Sun ' + date, color='orange', edgecolor='r',
         regression=regression, const=const,
     )
-    plot_linear_graph(
+    plot_squared_graph(
         ax[1], moon, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
         'Moon ' + date, color='purple', edgecolor='b',
         regression=regression, const=const, moon=True,
@@ -70,7 +70,7 @@ def subplot_tec_f0f2_graph(
         const: bool=False,
 ) -> Ax:
     if not split:
-        ax = plot_linear_graph(
+        ax = plot_squared_graph(
             ax, pd.concat([sun, moon]),
             'tec', 'f0f2', 'TEC', '$f_0F_2$', date,
             regression=regression, const=const,
@@ -82,12 +82,12 @@ def subplot_tec_f0f2_graph(
     # ax.set_xlim(xlim[0], xlim[1])
     # ax.set_ylim(ylim[0], ylim[1])
 
-    ax = plot_linear_graph(
+    ax = plot_squared_graph(
         ax, sun, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
         'Sun ' + date, color='orange', edgecolor='r',
         regression=regression, const=const,
     )
-    ax = plot_linear_graph(
+    ax = plot_squared_graph(
         ax, moon, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
         'Moon ' + date, color='purple', edgecolor='b',
         regression=regression, const=const, moon=True,

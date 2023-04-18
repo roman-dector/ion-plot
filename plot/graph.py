@@ -86,3 +86,25 @@ def plot_linear_graph(
             ax, x_ax, y_ax, x_label, y_label, title, color,
             edgecolor, regression, const, moon,
     )
+
+def plot_squared_graph(
+        ax: Ax,
+        df: DF,
+        x_name: str,
+        y_name: str,
+        x_label: str,
+        y_label: str,
+        title: str,
+        color: str='y',
+        edgecolor: str='g',
+        regression: bool=True,
+        const: bool=False,
+        moon: bool=False,
+) -> Ax:
+    x_ax = df[x_name]
+    y_ax = [y**2 for y in df[y_name]]
+
+    return plot_graph(
+            ax, x_ax, y_ax, x_label, y_label, title, color,
+            edgecolor, regression, const, moon,
+    )
