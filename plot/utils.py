@@ -16,6 +16,8 @@ from dal.models import(
     select_middle_lat_stations,
 )
 
+north_summer = [5, 6, 7, 8, 9, 10]
+north_winter = [11, 12, 1, 2, 3, 4]
 
 #from astral import LocationInfo
 #from astral.sun import sun

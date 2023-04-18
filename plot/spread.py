@@ -1,3 +1,15 @@
+from plot.utils import (
+    cast_data_to_dataframe,
+    get_month_days_count,
+    make_linear_regression,
+    split_df_to_sun_moon,
+    north_summer,
+    north_winter,
+)
+from scipy.stats import norm
+from dal import select_hour_avr_for_day, select_coords_by_ursi
+
+
 def count_f0f2_k_for_day(
     ursi: str,
     date: str,
@@ -88,3 +100,65 @@ def count_f0f2_k_spreading_for_year(ursi: str, year: int=2019) -> list[float]:
             pass
     
     return sun_result, moon_result
+
+def calc_f0f2_k_mean_for_day(
+    ursi: str,
+    date: str,
+) -> tuple[float]:
+    df = cast_data_to_dataframe(
+        select_hour_avr_for_day(ursi, date),
+        columns=['hour', 'f0f2', 'tec', 'b0'],
+    )
+    
+    sun, moon = split_df_to_sun_moon(df, ursi, date)
+    
+    mlr = lambda df: make_linear_regression([v**2 for v in df['f0f2']], df['tec'])
+    
+    reg_sun = mlr(sun)
+    reg_moon = mlr(moon)
+    sun_k, sun_k_err = reg_sun.params[0], reg_sun.bse[0]
+    moon_k, moon_k_err = reg_moon.params[0], reg_moon.bse[0]
+
+    return ((sun_k, sun_k_err), (moon_k, moon_k_err))
+
+
+def calc_f0f2_k_mean_for_month(
+    ursi: str,
+    month: int,
+    year: int=2019,
+) -> tuple[float]:
+    sun_range, moon_range = count_f0f2_k_spreading_for_month(ursi, month, year)
+    
+    sun_mean, sun_std_err = norm.fit(sun_range)
+    moon_mean, moon_std_err = norm.fit(moon_range)
+
+    return ((sun_mean, sun_std_err), (moon_mean, moon_std_err))
+
+
+def calc_f0f2_k_mean_for_summer_winter(
+    ursi: str,
+    year: int=2019 ,
+) -> tuple[tuple[float]]:
+    sum_range, win_range = count_f0f2_k_spreading_for_summer_winter(ursi, year)
+    
+    sum_sun_mean, sum_sun_std_err = norm.fit(sum_range[0])
+    sum_moon_mean, sum_moon_std_err = norm.fit(sum_range[1])
+    win_sun_mean, win_sun_std_err = norm.fit(win_range[0])
+    win_moon_mean, win_moon_std_err = norm.fit(win_range[1])
+    
+    return (
+        ((sum_sun_mean, sum_sun_std_err), (sum_moon_mean, sum_moon_std_err)),
+        ((win_sun_mean, win_sun_std_err), (win_moon_mean, win_moon_std_err)),
+    )
+
+
+def calc_f0f2_k_mean_for_year(
+    ursi: str,
+    year: int=2019 ,
+) -> tuple[float]:
+    sun_range, moon_range = count_f0f2_k_spreading_for_year(ursi, year)
+    
+    sun_mean, sun_std_err = norm.fit(sun_range)
+    moon_mean, moon_std_err = norm.fit(moon_range)
+
+    return ((sun_mean, sun_std_err), (moon_mean, moon_std_err))
