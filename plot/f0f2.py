@@ -92,6 +92,7 @@ def subplot_tec_f0f2_graph(
         'Moon ' + date, color='purple', edgecolor='b',
         regression=regression, const=const, moon=True,
     )
+    ax.grid()
 
     return ax
 
