@@ -6,6 +6,8 @@ from plot.utils import (
     north_summer,
     north_winter,
 )
+import seaborn as sns
+import matplotlib.pyplot as plt
 from scipy.stats import norm
 from dal import select_hour_avr_for_day, select_coords_by_ursi
 
@@ -162,3 +164,172 @@ def calc_f0f2_k_mean_for_year(
     moon_mean, moon_std_err = norm.fit(moon_range)
 
     return ((sun_mean, sun_std_err), (moon_mean, moon_std_err))
+
+
+def plot_f0f2_k_spreading_for_month(
+    ursi: str,
+    month: int,
+    year: int=2019,
+):
+    coords = select_coords_by_ursi(ursi)
+    k_sun_range, k_moon_range = count_f0f2_k_spreading_for_month(ursi, month, year)
+    
+    fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(15, 6))
+    fig.suptitle(
+        f"{ursi}, lat: {coords['lat']}  long: {coords['long']}, Year: {year} Month: {month}",
+        fontsize=18, y=0.98,
+    )
+
+    ax[0].set_title('Sun', fontsize=15)
+    ax[1].set_title('Moon', fontsize=15)
+    ax[0].grid()
+    
+    ax[1].grid()
+    
+    ax[0].set_xlim(None, 10)
+    ax[0].set_ylim(None, 12)
+    ax[1].set_xlim(None, 10)
+    ax[1].set_ylim(None, 12)
+
+    sns.histplot(k_sun_range, kde=True, ax=ax[0])
+    sns.histplot(k_moon_range, kde=True, ax=ax[1])
+    
+    mu_sun, std_sun = norm.fit(k_sun_range)
+    textstr_sun = '\n'.join((
+    r'$\mu=%.2f$' % (mu_sun, ),
+    r'$\sigma^2=%.2f$' % (std_sun, )))
+    
+    mu_moon, std_moon = norm.fit(k_moon_range)
+    textstr_moon = '\n'.join((
+    r'$\mu=%.2f$' % (mu_moon, ),
+    r'$\sigma^2=%.2f$' % (std_moon, )))
+
+    # these are matplotlib.patch.Patch properties
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    
+    # place a text box in upper left in axes coords
+    ax[0].text(0.05, 0.95, textstr_sun, transform=ax[0].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+    ax[1].text(0.05, 0.95, textstr_moon, transform=ax[1].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+
+
+def plot_f0f2_k_spreading_for_summer_winter(
+    ursi: str,
+    year: int=2019,
+):
+    coords = select_coords_by_ursi(ursi)
+    
+    sum_result, win_result = count_f0f2_k_spreading_for_summer_winter(ursi, year)
+    sum_sun_result, sum_moon_result = sum_result
+    win_sun_result, win_moon_result = win_result
+    
+    fig, ax = plt.subplots(ncols=2, nrows=2, figsize=(15, 10))
+    fig.suptitle(
+        f"{ursi}, lat: {coords['lat']}  long: {coords['long']}, Year: {year}",
+        fontsize=18, y=0.98,
+    )
+    
+    ax[0][0].set_title('Summer - Sun', fontsize=15)
+    ax[0][1].set_title('Summer - Moon', fontsize=15)
+    ax[1][0].set_title('Winter - Sun', fontsize=15)
+    ax[1][1].set_title('Winter - Moon', fontsize=15)
+    
+    ax[0][0].grid()
+    ax[0][1].grid()
+    ax[1][0].grid()
+    ax[1][1].grid()
+    
+    ax[0][0].set_xlim(None, 10)
+    ax[0][0].set_ylim(None, 30)
+    ax[0][1].set_xlim(None, 10)
+    ax[0][1].set_ylim(None, 30)
+    ax[1][0].set_xlim(None, 10)
+    ax[1][0].set_ylim(None, 30)
+    ax[1][1].set_xlim(None, 10)
+    ax[1][1].set_ylim(None, 30)
+
+    sns.histplot(sum_sun_result, kde=True, ax=ax[0][0])
+    sns.histplot(sum_moon_result, kde=True, ax=ax[0][1])
+    sns.histplot(win_sun_result, kde=True, ax=ax[1][0])
+    sns.histplot(win_moon_result, kde=True, ax=ax[1][1])
+    
+    
+    mu_sum_sun, std_sum_sun = norm.fit(sum_sun_result)
+    textstr_sum_sun = '\n'.join((
+    r'$\mu=%.2f$' % (mu_sum_sun, ),
+    r'$\sigma^2=%.2f$' % (std_sum_sun, )))
+    
+    mu_sum_moon, std_sum_moon = norm.fit(sum_moon_result)
+    textstr_sum_moon = '\n'.join((
+    r'$\mu=%.2f$' % (mu_sum_moon, ),
+    r'$\sigma^2=%.2f$' % (std_sum_moon, )))
+    
+    mu_win_sun, std_win_sun = norm.fit(win_sun_result)
+    textstr_win_sun = '\n'.join((
+    r'$\mu=%.2f$' % (mu_win_sun, ),
+    r'$\sigma^2=%.2f$' % (std_win_sun, )))
+    
+    mu_win_moon, std_win_moon = norm.fit(win_moon_result)
+    textstr_win_moon = '\n'.join((
+    r'$\mu=%.2f$' % (mu_win_moon, ),
+    r'$\sigma^2=%.2f$' % (std_win_moon, )))
+
+
+    # these are matplotlib.patch.Patch properties
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    
+    # place a text box in upper left in axes coords
+    ax[0][0].text(0.05, 0.95, textstr_sum_sun, transform=ax[0][0].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+    ax[0][1].text(0.05, 0.95, textstr_sum_moon, transform=ax[0][1].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+    ax[1][0].text(0.05, 0.95, textstr_win_sun, transform=ax[1][0].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+    ax[1][1].text(0.05, 0.95, textstr_win_moon, transform=ax[1][1].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+    
+def plot_f0f2_k_spreading_for_year(ursi: str, year: int=2019):
+    coords = select_coords_by_ursi(ursi)
+    
+    sun_range, moon_range = count_f0f2_k_spreading_for_year(ursi, year)
+    
+    fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(20, 10))
+    fig.suptitle(
+        f"{ursi}, lat: {coords['lat']}  long: {coords['long']}, Year: {year}",
+        fontsize=18, y=0.98,
+    )
+    
+    
+    ax[0].set_title('Sun', fontsize=15)
+    ax[1].set_title('Moon', fontsize=15)
+    ax[0].grid()
+    ax[1].grid()
+    
+    ax[0].set_xlim(None, 10)
+    ax[0].set_ylim(None, 50)
+    ax[1].set_xlim(None, 10)
+    ax[1].set_ylim(None, 50)
+
+    sns.histplot(sun_range, kde=True, ax=ax[0])
+    sns.histplot(moon_range, kde=True, ax=ax[1])
+    
+    mu_sun, std_sun = norm.fit(sun_range)
+    textstr_sun = '\n'.join((
+    r'$\mu=%.2f$' % (mu_sun, ),
+    r'$\sigma^2=%.2f$' % (std_sun, )))
+    
+    mu_moon, std_moon = norm.fit(moon_range)
+    textstr_moon = '\n'.join((
+    r'$\mu=%.2f$' % (mu_moon, ),
+    r'$\sigma^2=%.2f$' % (std_moon, )))
+
+    # these are matplotlib.patch.Patch properties
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    
+    # place a text box in upper left in axes coords
+    ax[0].text(0.05, 0.95, textstr_sun, transform=ax[0].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+    ax[1].text(0.05, 0.95, textstr_moon, transform=ax[1].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+    
