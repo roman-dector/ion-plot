@@ -1,4 +1,4 @@
-from plot.graph import plot_graph, plot_linear_graph
+from plot.graph import plot_graph
 from plot.utils import (
     cast_data_to_dataframe,
     get_month_days_count,
@@ -13,7 +13,7 @@ from scipy.stats import norm
 from dal import select_hour_avr_for_day, select_coords_by_ursi
 
 
-def count_f0f2_k_for_day(
+def count_b0_t_for_day(
     ursi: str,
     date: str,
 ) -> tuple[float]:
@@ -24,13 +24,13 @@ def count_f0f2_k_for_day(
     
     sun, moon = split_df_to_sun_moon(df, ursi, date)
     
-    mlr = lambda df: make_linear_regression([v**2 for v in df['f0f2']], df['tec'], False).params[0]
+    mlr = lambda df: make_linear_regression(df['b0'], df['tec'], True).params[0]
 
 
     return mlr(sun), mlr(moon)
 
 
-def count_f0f2_k_spreading_for_month(
+def count_b0_t_spreading_for_month(
     ursi: str,
     month: int,
     year: int=2019,
@@ -44,17 +44,17 @@ def count_f0f2_k_spreading_for_month(
         date = f"{year}-{str_month}-{str_day}"
         
         try:
-            k = count_f0f2_k_for_day(ursi, date)
+            t = count_b0_t_for_day(ursi, date)
 
-            sun_result.append(k[0])
-            moon_result.append(k[1])
+            sun_result.append(t[0])
+            moon_result.append(t[1])
         except Exception as ex:
             print(ex)
 
     return sun_result, moon_result
 
 
-def count_f0f2_k_spreading_for_summer_winter(
+def count_b0_t_spreading_for_summer_winter(
     ursi: str,
     year: int=2019,
 ) -> list[float]:
@@ -73,7 +73,7 @@ def count_f0f2_k_spreading_for_summer_winter(
     
     for m in sum_month:
         try:
-            sun, moon = count_f0f2_k_spreading_for_month(ursi, m, year)
+            sun, moon = count_b0_t_spreading_for_month(ursi, m, year)
             sum_sun_result = [*sun, *sum_sun_result]
             sum_moon_result = [*moon, *sum_moon_result]
         except:
@@ -81,7 +81,7 @@ def count_f0f2_k_spreading_for_summer_winter(
 
     for m in win_month:
         try:
-            sun, moon = count_f0f2_k_spreading_for_month(ursi, m, year)
+            sun, moon = count_b0_t_spreading_for_month(ursi, m, year)
             win_sun_result = [*sun, *win_sun_result]
             win_moon_result = [*moon, *win_moon_result]
         except:
@@ -90,13 +90,13 @@ def count_f0f2_k_spreading_for_summer_winter(
     return (sum_sun_result, sum_moon_result), (win_sun_result, win_moon_result)
 
 
-def count_f0f2_k_spreading_for_year(ursi: str, year: int=2019) -> list[float]:
+def count_b0_t_spreading_for_year(ursi: str, year: int=2019) -> list[float]:
     sun_result: list[float] = []
     moon_result: list[float] = []
         
     for m in range(1, 13):
         try:
-            sun, moon = count_f0f2_k_spreading_for_month(ursi, m, year)
+            sun, moon = count_b0_t_spreading_for_month(ursi, m, year)
             sun_result = [*sun_result, *sun]
             moon_result = [*moon_result, *moon]
         except:
@@ -104,7 +104,7 @@ def count_f0f2_k_spreading_for_year(ursi: str, year: int=2019) -> list[float]:
     
     return sun_result, moon_result
 
-def calc_f0f2_k_mean_for_day(
+def calc_b0_t_mean_for_day(
     ursi: str,
     date: str,
 ) -> tuple[float]:
@@ -115,22 +115,22 @@ def calc_f0f2_k_mean_for_day(
     
     sun, moon = split_df_to_sun_moon(df, ursi, date)
     
-    mlr = lambda df: make_linear_regression([v**2 for v in df['f0f2']], df['tec'])
+    mlr = lambda df: make_linear_regression(df['b0'], df['tec'])
     
     reg_sun = mlr(sun)
     reg_moon = mlr(moon)
-    sun_k, sun_k_err = reg_sun.params[0], reg_sun.bse[0]
-    moon_k, moon_k_err = reg_moon.params[0], reg_moon.bse[0]
+    sun_t, sun_t_err = reg_sun.params[0], reg_sun.bse[0]
+    moon_t, moon_t_err = reg_moon.params[0], reg_moon.bse[0]
 
-    return ((sun_k, sun_k_err), (moon_k, moon_k_err))
+    return ((sun_t, sun_t_err), (moon_t, moon_t_err))
 
 
-def calc_f0f2_k_mean_for_month(
+def calc_b0_t_mean_for_month(
     ursi: str,
     month: int,
     year: int=2019,
 ) -> tuple[float]:
-    sun_range, moon_range = count_f0f2_k_spreading_for_month(ursi, month, year)
+    sun_range, moon_range = count_b0_t_spreading_for_month(ursi, month, year)
     
     sun_mean, sun_std_err = norm.fit(sun_range)
     moon_mean, moon_std_err = norm.fit(moon_range)
@@ -138,11 +138,11 @@ def calc_f0f2_k_mean_for_month(
     return ((sun_mean, sun_std_err), (moon_mean, moon_std_err))
 
 
-def calc_f0f2_k_mean_for_summer_winter(
+def calc_b0_t_mean_for_summer_winter(
     ursi: str,
     year: int=2019 ,
 ) -> tuple[tuple[float]]:
-    sum_range, win_range = count_f0f2_k_spreading_for_summer_winter(ursi, year)
+    sum_range, win_range = count_b0_t_spreading_for_summer_winter(ursi, year)
     
     sum_sun_mean, sum_sun_std_err = norm.fit(sum_range[0])
     sum_moon_mean, sum_moon_std_err = norm.fit(sum_range[1])
@@ -155,11 +155,11 @@ def calc_f0f2_k_mean_for_summer_winter(
     )
 
 
-def calc_f0f2_k_mean_for_year(
+def calc_b0_t_mean_for_year(
     ursi: str,
     year: int=2019 ,
 ) -> tuple[float]:
-    sun_range, moon_range = count_f0f2_k_spreading_for_year(ursi, year)
+    sun_range, moon_range = count_b0_t_spreading_for_year(ursi, year)
     
     sun_mean, sun_std_err = norm.fit(sun_range)
     moon_mean, moon_std_err = norm.fit(moon_range)
@@ -167,13 +167,13 @@ def calc_f0f2_k_mean_for_year(
     return ((sun_mean, sun_std_err), (moon_mean, moon_std_err))
 
 
-def plot_f0f2_k_spreading_for_month(
+def plot_b0_t_spreading_for_month(
     ursi: str,
     month: int,
     year: int=2019,
 ):
     coords = select_coords_by_ursi(ursi)
-    k_sun_range, k_moon_range = count_f0f2_k_spreading_for_month(ursi, month, year)
+    k_sun_range, k_moon_range = count_b0_t_spreading_for_month(ursi, month, year)
     
     fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(15, 6))
     fig.suptitle(
@@ -215,13 +215,13 @@ def plot_f0f2_k_spreading_for_month(
             verticalalignment='top', bbox=props)
 
 
-def plot_f0f2_k_spreading_for_summer_winter(
+def plot_b0_t_spreading_for_summer_winter(
     ursi: str,
     year: int=2019,
 ):
     coords = select_coords_by_ursi(ursi)
     
-    sum_result, win_result = count_f0f2_k_spreading_for_summer_winter(ursi, year)
+    sum_result, win_result = count_b0_t_spreading_for_summer_winter(ursi, year)
     sum_sun_result, sum_moon_result = sum_result
     win_sun_result, win_moon_result = win_result
     
@@ -290,10 +290,10 @@ def plot_f0f2_k_spreading_for_summer_winter(
     ax[1][1].text(0.05, 0.95, textstr_win_moon, transform=ax[1][1].transAxes, fontsize=14,
             verticalalignment='top', bbox=props)
     
-def plot_f0f2_k_spreading_for_year(ursi: str, year: int=2019):
+def plot_b0_t_spreading_for_year(ursi: str, year: int=2019):
     coords = select_coords_by_ursi(ursi)
     
-    sun_range, moon_range = count_f0f2_k_spreading_for_year(ursi, year)
+    sun_range, moon_range = count_b0_t_spreading_for_year(ursi, year)
     
     fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(20, 10))
     fig.suptitle(
@@ -335,17 +335,17 @@ def plot_f0f2_k_spreading_for_year(ursi: str, year: int=2019):
             verticalalignment='top', bbox=props)
 
 
-def plot_k_spreading_lat_split_month_graph(month: int, year: int, stations_list: list[str]):
-    k_sun_range = []
-    k_moon_range = []
+def plot_t_spreading_lat_split_month_graph(month: int, year: int, stations_list: list[str]):
+    t_sun_range = []
+    t_moon_range = []
     lat_range = []
 
     for s in stations_list:
         try:
-            k = count_f0f2_k_spreading_for_month(s, month, year)
+            t = calc_b0_t_mean_for_month(s, month, year)
 
-            k_sun_range.append(sum(k[0])/len(k[0]))
-            k_moon_range.append(sum(k[1])/len(k[1]))
+            t_sun_range.append(t[0])
+            t_moon_range.append(t[1])
             lat_range.append(select_coords_by_ursi(s)['lat'])
         except Exception as ex:
             print(ex)
@@ -363,32 +363,32 @@ def plot_k_spreading_lat_split_month_graph(month: int, year: int, stations_list:
     ax[1].set_ylim(None, 10)
 
     plot_graph(
-        ax[0], lat_range, k_sun_range,
-        'lat', 'k', 'Sun', color='orange',
+        ax[0], lat_range, t_sun_range,
+        'lat', 't', 'Sun', color='orange',
         edgecolor='r',const=True,
     )
     plot_graph(
-        ax[1], lat_range, k_moon_range,
-        'lat', 'k', 'Moon', color='purple',
+        ax[1], lat_range, t_moon_range,
+        'lat', 't', 'Moon', color='purple',
         edgecolor='b', const=True,
     )
 
 
-def plot_k_spreading_lat_sum_win_split_graph(month: int, year: int, stations_list: list[str]):
-    k_sum_sun_range = []
-    k_sum_moon_range = []
-    k_win_sun_range = []
-    k_win_moon_range = []
+def plot_t_spreading_lat_sum_win_split_graph(month: int, year: int, stations_list: list[str]):
+    t_sum_sun_range = []
+    t_sum_moon_range = []
+    t_win_sun_range = []
+    t_win_moon_range = []
     lat_range = []
 
     for s in stations_list:
         try:
-            k = calc_f0f2_k_mean_for_summer_winter(s, year)
+            t = calc_b0_t_mean_for_summer_winter(s, year)
 
-            k_sum_sun_range.append(k[0][0])
-            k_sum_moon_range.append(k[0][1])
-            k_win_sun_range.append(k[1][0])
-            k_win_moon_range.append(k[1][1])
+            t_sum_sun_range.append(t[0][0])
+            t_sum_moon_range.append(t[0][1])
+            t_win_sun_range.append(t[1][0])
+            t_win_moon_range.append(t[1][1])
 
             lat_range.append(select_coords_by_ursi(s)['lat'])
         except Exception as ex:
@@ -409,22 +409,22 @@ def plot_k_spreading_lat_sum_win_split_graph(month: int, year: int, stations_lis
     ax[1][1].set_ylim(None, 10)
 
     plot_graph(
-        ax[0][0], lat_range, k_sum_sun_range,
-        'lat', 'k', 'Sum-Sun', color='orange',
+        ax[0][0], lat_range, t_sum_sun_range,
+        'lat', 't', 'Sum-Sun', color='orange',
         edgecolor='r',const=True,
     )
     plot_graph(
-        ax[0][1], lat_range, k_sum_moon_range,
-        'lat', 'k', 'Win-Moon', color='purple',
+        ax[0][1], lat_range, t_sum_moon_range,
+        'lat', 't', 'Win-Moon', color='purple',
         edgecolor='b', const=True,
     )
     plot_graph(
-        ax[1][0], lat_range, k_win_sun_range,
-        'lat', 'k', 'Sum-Sun', color='orange',
+        ax[1][0], lat_range, t_win_sun_range,
+        'lat', 't', 'Sum-Sun', color='orange',
         edgecolor='r',const=True,
     )
     plot_graph(
-        ax[1][1], lat_range, k_win_moon_range,
-        'lat', 'k', 'Win-Moon', color='purple',
+        ax[1][1], lat_range, t_win_moon_range,
+        'lat', 't', 'Win-Moon', color='purple',
         edgecolor='b', const=True,
     )
