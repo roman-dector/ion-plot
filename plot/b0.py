@@ -53,7 +53,7 @@ def plot_tec_b0_graph(
     plot_linear_graph(
         ax[1], moon, 'tec', 'b0', 'TEC', 'B0',
         'Moon ' + date, color='purple', edgecolor='b',
-        regression=regression, const=const, moon=True,
+        regression=regression, const=const, turn=True,
     )
     return ax
 
@@ -99,7 +99,7 @@ def subplot_tec_b0_graph(
     ax = plot_linear_graph(
         ax, moon, 'tec', 'b0', 'TEC', 'B0',
         'Moon ' + date, color='purple', edgecolor='b',
-        regression=regression, const=const, moon=True,
+        regression=regression, const=const, turn=True,
     )
     ax.grid()
 

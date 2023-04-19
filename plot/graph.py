@@ -27,11 +27,11 @@ def plot_graph(
         edgecolor: str='g',
         regression: bool=True,
         const: bool=False,
-        moon: bool=False,
+        turn: bool=False,
 ) -> Ax:
     if regression:
         if const:
-            if moon:
+            if turn:
                 reg = make_linear_regression(x_ax, y_ax, const)
                 linspace = np.linspace(0, max(y_ax), 100)
                 ax.plot(reg.predict(sm.add_constant(linspace)), linspace, c=edgecolor)
@@ -77,14 +77,14 @@ def plot_linear_graph(
         edgecolor: str='g',
         regression: bool=True,
         const: bool=False,
-        moon: bool=False,
+        turn: bool=False,
 ) -> Ax:
     x_ax = df[x_name]
     y_ax = df[y_name]
 
     return plot_graph(
             ax, x_ax, y_ax, x_label, y_label, title, color,
-            edgecolor, regression, const, moon,
+            edgecolor, regression, const, turn,
     )
 
 def plot_squared_graph(

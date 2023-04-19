@@ -363,4 +363,4 @@ def plot_k_spreading_lat_split_month_graph(month: int, year: int, stations_list:
     ax[1].set_ylim(None, 10)
 
     plot_graph(ax[0], lat_range, k_sun_range, 'lat', 'k', 'Sun', const=True)
-    plot_graph(ax[1], lat_range, k_moon_range, 'lat', 'k', 'Moon', const=True, moon=True)
+    plot_graph(ax[1], lat_range, k_moon_range, 'lat', 'k', 'Moon', const=True)
