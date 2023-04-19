@@ -172,7 +172,12 @@ def plot_f0f2_k_spreading_for_month(
     year: int=2019,
 ):
     coords = select_coords_by_ursi(ursi)
+    print(f'{coords=}')
     k_sun_range, k_moon_range = count_f0f2_k_spreading_for_month(ursi, month, year)
+    print('k_sun')
+    print(k_sun_range)
+    print('k_moon')
+    print(k_moon_range)
     
     fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(15, 6))
     fig.suptitle(
