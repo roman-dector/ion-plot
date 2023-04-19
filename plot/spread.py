@@ -342,7 +342,7 @@ def plot_k_spreading_lat_split_month_graph(month: int, year: int, stations_list:
 
     for s in stations_list:
         try:
-            k = count_f0f2_k_spreading_for_month(s, month)
+            k = count_f0f2_k_spreading_for_month(s, month, year)
 
             k_sun_range.append(sum(k[0])/len(k[0]))
             k_moon_range.append(sum(k[1])/len(k[1]))
