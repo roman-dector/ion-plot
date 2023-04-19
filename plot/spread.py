@@ -362,5 +362,69 @@ def plot_k_spreading_lat_split_month_graph(month: int, year: int, stations_list:
     ax[1].set_xlim(None, 60)
     ax[1].set_ylim(None, 10)
 
-    plot_graph(ax[0], lat_range, k_sun_range, 'lat', 'k', 'Sun', const=True)
-    plot_graph(ax[1], lat_range, k_moon_range, 'lat', 'k', 'Moon', const=True)
+    plot_graph(
+        ax[0], lat_range, k_sun_range,
+        'lat', 'k', 'Sun', color='orange',
+        edgecolor='r',const=True,
+    )
+    plot_graph(
+        ax[1], lat_range, k_moon_range,
+        'lat', 'k', 'Moon', color='purple',
+        edgecolor='b', const=True,
+    )
+
+
+def plot_k_spreading_lat_sum_win_split_graph(month: int, year: int, stations_list: list[str]):
+    k_sum_sun_range = []
+    k_sum_moon_range = []
+    k_win_sun_range = []
+    k_win_moon_range = []
+    lat_range = []
+
+    for s in stations_list:
+        try:
+            k = calc_f0f2_k_mean_for_summer_winter(s, year)
+
+            k_sum_sun_range.append(k[0][0])
+            k_sum_moon_range.append(k[0][1])
+            k_win_sun_range.append(k[1][0])
+            k_win_moon_range.append(k[1][1])
+
+            lat_range.append(select_coords_by_ursi(s)['lat'])
+        except Exception as ex:
+            print(ex)
+
+    fig, ax = plt.subplots(ncols=2, nrows=2, figsize=(15,6))
+    
+    fig.suptitle(f"Year: {year}, Month: {month}", fontsize=20, y=0.96)
+
+    ax[0][0].grid()
+    ax[0][1].grid()
+    ax[1][0].grid()
+    ax[1][1].grid()
+
+    ax[0][0].set_xlim(None, 60)
+    ax[0][1].set_ylim(None, 10)
+    ax[1][0].set_xlim(None, 60)
+    ax[1][1].set_ylim(None, 10)
+
+    plot_graph(
+        ax[0][0], lat_range, k_sum_sun_range,
+        'lat', 'k', 'Sum-Sun', color='orange',
+        edgecolor='r',const=True,
+    )
+    plot_graph(
+        ax[0][1], lat_range, k_sum_moon_range,
+        'lat', 'k', 'Win-Moon', color='purple',
+        edgecolor='b', const=True,
+    )
+    plot_graph(
+        ax[1][0], lat_range, k_win_sun_range,
+        'lat', 'k', 'Sum-Sun', color='orange',
+        edgecolor='r',const=True,
+    )
+    plot_graph(
+        ax[1][1], lat_range, k_win_moon_range,
+        'lat', 'k', 'Win-Moon', color='purple',
+        edgecolor='b', const=True,
+    )
