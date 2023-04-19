@@ -23,7 +23,7 @@ def count_f0f2_k_for_day(
     
     sun, moon = split_df_to_sun_moon(df, ursi, date)
     
-    mlr = lambda df: make_linear_regression([v**2 for v in df['f0f2']], df['tec']).params[0]
+    mlr = lambda df: make_linear_regression([v**2 for v in df['f0f2']], df['tec'], False).params[0]
 
 
     return mlr(sun), mlr(moon)
@@ -47,8 +47,8 @@ def count_f0f2_k_spreading_for_month(
 
             sun_result.append(k[0])
             moon_result.append(k[1])
-        except:
-            continue
+        except Exception as ex:
+            print(ex)
 
     return sun_result, moon_result
 
@@ -172,12 +172,7 @@ def plot_f0f2_k_spreading_for_month(
     year: int=2019,
 ):
     coords = select_coords_by_ursi(ursi)
-    print(f'{coords=}')
     k_sun_range, k_moon_range = count_f0f2_k_spreading_for_month(ursi, month, year)
-    print('k_sun')
-    print(k_sun_range)
-    print('k_moon')
-    print(k_moon_range)
     
     fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(15, 6))
     fig.suptitle(
@@ -337,4 +332,3 @@ def plot_f0f2_k_spreading_for_year(ursi: str, year: int=2019):
             verticalalignment='top', bbox=props)
     ax[1].text(0.05, 0.95, textstr_moon, transform=ax[1].transAxes, fontsize=14,
             verticalalignment='top', bbox=props)
-    
