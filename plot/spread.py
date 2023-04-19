@@ -1,3 +1,4 @@
+from plot.graph import plot_graph, plot_linear_graph
 from plot.utils import (
     cast_data_to_dataframe,
     get_month_days_count,
@@ -332,3 +333,34 @@ def plot_f0f2_k_spreading_for_year(ursi: str, year: int=2019):
             verticalalignment='top', bbox=props)
     ax[1].text(0.05, 0.95, textstr_moon, transform=ax[1].transAxes, fontsize=14,
             verticalalignment='top', bbox=props)
+
+
+def plot_k_spreading_lat_split_month_graph(month: int, year: int, stations_list: list[str]):
+    k_sun_range = []
+    k_moon_range = []
+    lat_range = []
+
+    for s in stations_list:
+        try:
+            k = count_f0f2_k_spreading_for_month(s, month)
+
+            k_sun_range.append(sum(k[0])/len(k[0]))
+            k_moon_range.append(sum(k[1])/len(k[1]))
+            lat_range.append(select_coords_by_ursi(s)['lat'])
+        except Exception as ex:
+            print(ex)
+
+    fig, ax = plt.subplots(ncols=2, nrows=1, figsize=(15,6))
+    
+    fig.suptitle(f"Year: {year}, Month: {month}", fontsize=20, y=0.96)
+
+    ax[0].grid()
+    ax[1].grid()
+    
+    ax[0].set_xlim(None, 60)
+    ax[0].set_ylim(None, 10)
+    ax[1].set_xlim(None, 60)
+    ax[1].set_ylim(None, 10)
+
+    plot_graph(ax[0], lat_range, k_sun_range, 'lat', 'k', 'Sun', const=True)
+    plot_graph(ax[1], lat_range, k_moon_range, 'lat', 'k', 'Moon', const=True, moon=True)
