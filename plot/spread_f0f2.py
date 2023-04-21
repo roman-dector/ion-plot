@@ -38,7 +38,7 @@ def count_f0f2_k_spreading_for_month(
     sun_result: list[float] = []
     moon_result: list[float] = []
     
-    for day in range(1, get_month_days_count(month) + 1):
+    for day in range(1, get_month_days_count(month, year) + 1):
         str_month = f'0{month}' if month < 10 else f'{month}'
         str_day = f'0{day}' if day < 10 else f'{day}'
         date = f"{year}-{str_month}-{str_day}"
@@ -115,7 +115,7 @@ def calc_f0f2_k_mean_for_day(
     
     sun, moon = split_df_to_sun_moon(df, ursi, date)
     
-    mlr = lambda df: make_linear_regression([v**2 for v in df['f0f2']], df['tec'])
+    mlr = lambda df: make_linear_regression([v**2 for v in df['f0f2']], df['tec'], False)
     
     reg_sun = mlr(sun)
     reg_moon = mlr(moon)

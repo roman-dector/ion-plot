@@ -13,10 +13,11 @@ from scipy.stats import norm
 from dal import select_hour_avr_for_day, select_coords_by_ursi
 
 
-def count_b0_t_for_day(
+# TODO: fix linear reg here (coeff and const)
+def count_b0_ab_for_day(
     ursi: str,
     date: str,
-) -> tuple[float]:
+) -> tuple[tuple[float]]:
     df = cast_data_to_dataframe(
         select_hour_avr_for_day(ursi, date),
         columns=['hour', 'f0f2', 'tec', 'b0'],
@@ -24,10 +25,17 @@ def count_b0_t_for_day(
     
     sun, moon = split_df_to_sun_moon(df, ursi, date)
     
-    mlr = lambda df: make_linear_regression(df['b0'], df['tec'], True).params[0]
+    mlr = lambda df: make_linear_regression(df['b0'], df['tec'], True)
+    sun_reg = mlr(sun)
+    moon_reg = mlr(moon)
 
 
-    return mlr(sun), mlr(moon)
+    return (
+        (sun_reg.params[1], sun_reg.bse[1]),
+        (sun_reg.params[0], sun_reg.bse[0]),
+        (moon_reg.params[1], moon_reg.bse[1]),
+        (moon_reg.params[0], moon_reg.bse[0]),
+    )
 
 
 def count_b0_t_spreading_for_month(

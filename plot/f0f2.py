@@ -8,6 +8,9 @@ from dal import (
     select_coords_by_ursi,
     select_hour_avr_for_day,
 )
+from dal.models import (
+    select_2h_avr_for_day_with_sat_tec,
+)
 
 from plot.graph import plot_squared_graph
 from plot.utils import (
@@ -106,11 +109,21 @@ def plot_tec_f0f2_for_day_graph(
     ylim=(None, None),
     regression: bool=True,
     const: bool=False,
+    use_sat_tec: bool=False,
 ) -> None:
-    df = cast_data_to_dataframe(
-        select_hour_avr_for_day(ursi, date),
-        columns=['hour', 'f0f2', 'tec', 'b0'],
-    )
+    if not use_sat_tec:
+        df = cast_data_to_dataframe(
+            select_hour_avr_for_day(ursi, date),
+            columns=['hour', 'f0f2', 'tec', 'b0'],
+        )
+    else:
+        df = cast_data_to_dataframe(
+            select_2h_avr_for_day_with_sat_tec(ursi, date),
+            columns=[
+                'hour','f0f2', 'ion_tec', 'b0',
+                'tec', 'sat_lat', 'sat_long',
+            ],
+        )
 
     sunrise, sunset = get_sunrise_sunset(date, select_coords_by_ursi(ursi))
     hour = df['hour']
