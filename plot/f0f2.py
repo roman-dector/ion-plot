@@ -10,6 +10,7 @@ from dal import (
 )
 from dal.models import (
     select_2h_avr_for_day_with_sat_tec,
+    transform_data,
 )
 
 from plot.graph import plot_squared_graph
@@ -117,8 +118,10 @@ def plot_tec_f0f2_for_day_graph(
             columns=['hour', 'f0f2', 'tec', 'b0'],
         )
     else:
+        data = select_2h_avr_for_day_with_sat_tec(ursi, date)
+        print(transform_data(data))
         df = cast_data_to_dataframe(
-            select_2h_avr_for_day_with_sat_tec(ursi, date),
+            data,
             columns=[
                 'hour','f0f2', 'ion_tec', 'b0',
                 'tec', 'sat_lat', 'sat_long',
