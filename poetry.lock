@@ -57,7 +57,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "dal"
-version = "0.1.13"
+version = "0.1.14"
 description = ""
 category = "main"
 optional = false
@@ -73,7 +73,7 @@ requests = "^2.28.1"
 type = "git"
 url = "git@github.com:roman-dector/ion-dal.git"
 reference = "main"
-resolved_reference = "07c753a4548feb0b060766e6a3dc55437b20dd1d"
+resolved_reference = "36aecef59648c8128ce0438c81a8d9bbd93380bb"
 
 [[package]]
 name = "fonttools"
@@ -206,7 +206,7 @@ test = ["pytest", "pytest-cov", "scipy"]
 
 [[package]]
 name = "peewee"
-version = "3.16.1"
+version = "3.16.2"
 description = "a little orm"
 category = "main"
 optional = false
@@ -757,7 +757,7 @@ patsy = [
     {file = "patsy-0.5.3.tar.gz", hash = "sha256:bdc18001875e319bc91c812c1eb6a10be4bb13cb81eb763f466179dca3b67277"},
 ]
 peewee = [
-    {file = "peewee-3.16.1.tar.gz", hash = "sha256:03ba808b96bb3366fc7e949d669804d79059e01d472f0dfaddc2da5fa1614ee7"},
+    {file = "peewee-3.16.2.tar.gz", hash = "sha256:10769981198c7311f84a0ca8db892fa213303a8eb1305deb795a71e7bd606a91"},
 ]
 pillow = [
     {file = "Pillow-9.5.0-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:ace6ca218308447b9077c14ea4ef381ba0b67ee78d64046b3f19cf4e1139ad16"},
