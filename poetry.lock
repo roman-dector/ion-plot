@@ -57,7 +57,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "dal"
-version = "0.1.6"
+version = "0.1.7"
 description = ""
 category = "main"
 optional = false
@@ -73,7 +73,7 @@ requests = "^2.28.1"
 type = "git"
 url = "git@github.com:roman-dector/ion-dal.git"
 reference = "main"
-resolved_reference = "0d02789c0f0a22194504a87fe6a820969929ebf2"
+resolved_reference = "32f82bacf87de30364035156a21060d274efd9fe"
 
 [[package]]
 name = "fonttools"
