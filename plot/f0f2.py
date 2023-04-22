@@ -27,15 +27,15 @@ def plot_tec_f0f2_graph(
         moon: DF,
         date: str,
         split: bool=True,
-        xlim=(None, None),
-        ylim=(None, None),
+        xlim=(None, 15),
+        ylim=(None, 30),
         regression: bool=True,
         const: bool=False,
 ):
     if not split:
         _, ax = plt.subplots(nrows=1, ncols=1, figsize=(15,10))
-        # ax.set_xlim(xlim[0], xlim[1])
-        # ax.set_ylim(ylim[0], ylim[1])
+        ax.set_xlim(xlim[0], xlim[1])
+        ax.set_ylim(ylim[0], ylim[1])
         plot_squared_graph(
             ax, pd.concat([sun, moon]),
             'tec', 'f0f2', 'TEC', '$f_0F_2$',
@@ -45,10 +45,10 @@ def plot_tec_f0f2_graph(
 
     _, ax = plt.subplots(nrows=1, ncols=2, figsize=(15,6))
 
-    # ax[0].set_xlim(xlim[0], xlim[1])
-    # ax[0].set_ylim(ylim[0], ylim[1])
-    # ax[1].set_xlim(xlim[0], xlim[1])
-    # ax[1].set_ylim(ylim[0], ylim[1])
+    ax[0].set_xlim(xlim[0], xlim[1])
+    ax[0].set_ylim(ylim[0], ylim[1])
+    ax[1].set_xlim(xlim[0], xlim[1])
+    ax[1].set_ylim(ylim[0], ylim[1])
 
     plot_squared_graph(
         ax[0], sun, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
@@ -69,8 +69,8 @@ def subplot_tec_f0f2_graph(
         date: str,
         ax: Ax,
         split: bool=True,
-        xlim=(None, None),
-        ylim=(None, None),
+        xlim=(None, 15),
+        ylim=(None, 30),
         regression: bool=True,
         const: bool=False,
 ) -> Ax:
@@ -84,8 +84,8 @@ def subplot_tec_f0f2_graph(
         ax.set_ylim(ylim[0], ylim[1])
         return ax
 
-    # ax.set_xlim(xlim[0], xlim[1])
-    # ax.set_ylim(ylim[0], ylim[1])
+    ax.set_xlim(xlim[0], xlim[1])
+    ax.set_ylim(ylim[0], ylim[1])
 
     ax = plot_squared_graph(
         ax, sun, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
@@ -107,8 +107,8 @@ def plot_tec_f0f2_for_day_graph(
     date: str,
     ax = None,
     split = True,
-    xlim=(None, None),
-    ylim=(None, None),
+    xlim=(None, 15),
+    ylim=(None, 30),
     regression: bool=True,
     const: bool=False,
     sat_tec: bool=False,
@@ -145,8 +145,8 @@ def plot_tec_f0f2_for_each_day_in_month_graph(
     ursi: str,
     month: int,
     split=True,
-    xlim=(None, None),
-    ylim=(None, None),
+    xlim=(None, 15),
+    ylim=(None, 30),
     regression: bool=True,
     const: bool=False,
 ) -> None:
