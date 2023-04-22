@@ -149,6 +149,7 @@ def plot_tec_f0f2_for_each_day_in_month_graph(
     ylim=(None, 30),
     regression: bool=True,
     const: bool=False,
+    sat_tec: bool=False,
 ) -> None:
     coords = select_coords_by_ursi(ursi)
     
@@ -177,7 +178,8 @@ def plot_tec_f0f2_for_each_day_in_month_graph(
         try:
             plot_tec_f0f2_for_day_graph(
                 ursi, f"2019-{str_month}-{str_day}",
-                axes[day - 1], split, xlim, ylim, regression, const,
+                axes[day - 1], split, xlim, ylim,
+                regression, const, sat_tec=sat_tec,
             )
         except Exception as ex:
             print(ex)
