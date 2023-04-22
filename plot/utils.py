@@ -12,7 +12,8 @@ from statsmodels.regression.linear_model import (
 from dal import select_coords_by_ursi
 from dal.models import(
     IonData,
-    transform_data,
+    transform_ion_data,
+    transform_sat_data,
     select_middle_lat_stations,
 )
 
@@ -55,8 +56,15 @@ def get_sunrise_sunset(date, coords):
         print(f"Error: {e}")
 
 
-def cast_data_to_dataframe(data: IonData, columns: list[str]) -> pd.DataFrame:
-    return pd.DataFrame(transform_data(data), columns=columns)
+def cast_data_to_dataframe(
+    data: IonData,
+    columns: list[str],
+    sat_tec: bool=False
+) -> pd.DataFrame:
+    return pd.DataFrame(
+        transform_sat_data(data) if sat_tec else transform_ion_data(data),
+        columns=columns
+    )
 
 
 def split_df_to_sun_moon(df, ursi, date):
