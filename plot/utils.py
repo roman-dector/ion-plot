@@ -56,6 +56,9 @@ def get_sunrise_sunset(date, coords):
         print(f"Error: {e}")
 
 
+
+
+
 def cast_data_to_dataframe(
     data: IonData,
     columns: list[str],
