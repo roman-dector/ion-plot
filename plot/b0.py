@@ -1,12 +1,15 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.axis import Axis as Ax
 
+from matplotlib.axis import Axis as Ax
 from pandas import DataFrame as DF
 
 from dal import (
     select_coords_by_ursi,
     select_hour_avr_for_day,
+)
+from dal.models import (
+    select_2h_avr_for_day_with_sat_tec,
 )
 
 from plot.graph import plot_linear_graph
@@ -22,82 +25,79 @@ def plot_tec_b0_graph(
         moon: DF,
         date: str,
         split: bool=True,
-        xlim=(None, None),
-        ylim=(None, None),
+        xlim=(None, 15),
+        ylim=(None, 300),
         regression: bool=True,
         const: bool=False,
+        sat_tec: bool=False,
 ):
+    x_name = 'sat_tec' if sat_tec else 'ion_tec'
+
     if not split:
         _, ax = plt.subplots(nrows=1, ncols=1, figsize=(15,10))
-        # ax.set_xlim(xlim[0], xlim[1])
-        # ax.set_ylim(ylim[0], ylim[1])
+        ax.set_xlim(xlim[0], xlim[1])
+        ax.set_ylim(ylim[0], ylim[1])
         plot_linear_graph(
             ax, pd.concat([sun, moon]),
-            'tec', 'b0', 'TEC', 'B0',
+            x_name, 'b0', 'TEC', 'B0',
             date, regression=regression, const=const,
         )
         return ax
 
     _, ax = plt.subplots(nrows=1, ncols=2, figsize=(15,6))
 
-    # ax[0].set_xlim(xlim[0], xlim[1])
-    # ax[0].set_ylim(ylim[0], ylim[1])
-    # ax[1].set_xlim(xlim[0], xlim[1])
-    # ax[1].set_ylim(ylim[0], ylim[1])
+    ax[0].set_xlim(xlim[0], xlim[1])
+    ax[0].set_ylim(ylim[0], ylim[1])
+    ax[1].set_xlim(xlim[0], xlim[1])
+    ax[1].set_ylim(ylim[0], ylim[1])
 
     plot_linear_graph(
-        ax[0], sun, 'tec', 'b0', 'TEC', 'B0',
+        ax[0], sun, x_name, 'b0', 'TEC', 'B0',
         'Sun ' + date, color='orange', edgecolor='r',
         regression=regression, const=const,
     )
     plot_linear_graph(
-        ax[1], moon, 'tec', 'b0', 'TEC', 'B0',
+        ax[1], moon, x_name, 'b0', 'TEC', 'B0',
         'Moon ' + date, color='purple', edgecolor='b',
         regression=regression, const=const, turn=True,
     )
     return ax
 
-    
+
 def subplot_tec_b0_graph(
         sun: DF,
         moon: DF,
         date: str,
         ax: Ax,
         split: bool=True,
-        xlim=(None, None),
-        ylim=(None, None),
+        xlim=(None, 15),
+        ylim=(None, 300),
         regression: bool=True,
         const: bool=False,
+        sat_tec: bool=False,
 ) -> Ax:
+    x_name = 'sat_tec' if sat_tec else 'ion_tec'
+
     if not split:
         ax = plot_linear_graph(
             ax, pd.concat([sun, moon]),
-            'tec', 'b0', 'TEC', 'B0', date,
+            x_name, 'b0', 'TEC', 'B0', date,
             regression=regression, const=const,
         )
         ax.set_xlim(xlim[0], xlim[1])
         ax.set_ylim(ylim[0], ylim[1])
         return ax
 
-    # x_sun, y_sun = sun['tec'], sun['b0']
-    # x_moon, y_moon = moon['tec'], moon['b0']
-    
-    # ax.set_xlim(xlim[0], xlim[1])
-    # ax.set_ylim(ylim[0], ylim[1])
-#    ax.set_title(
-#        f"{date},\n\
-#        k_sun={round(reg_sun.params[0], 3)}, err={round(reg_sun.bse[0], 3)}\n\
-#        k_moon={round(reg_moon.params[0], 3)}, err={round(reg_moon.bse[0], 3)}",
-#        fontsize=15,
-#    )
+    ax.set_xlim(xlim[0], xlim[1])
+    ax.set_ylim(ylim[0], ylim[1])
 
     ax = plot_linear_graph(
-        ax, sun, 'tec', 'b0', 'TEC', 'B0',
+        ax, sun, x_name, 'b0', 'TEC', 'B0',
         'Sun ' + date, color='orange', edgecolor='r',
         regression=regression, const=const,
     )
     ax = plot_linear_graph(
-        ax, moon, 'tec', 'b0', 'TEC', 'B0',
+        ax, moon, x_name, 'b0', 'TEC', 'B0',
         'Moon ' + date, color='purple', edgecolor='b',
         regression=regression, const=const, turn=True,
     )
@@ -111,15 +111,23 @@ def plot_tec_b0_for_day_graph(
     date: str,
     ax = None,
     split = True,
-    xlim=(None, None),
-    ylim=(None, None),
+    xlim=(None, 15),
+    ylim=(None, 300),
     regression: bool=True,
     const: bool=False,
+    sat_tec: bool=False,
 ) -> None:
-    df = cast_data_to_dataframe(
-        select_hour_avr_for_day(ursi, date),
-        columns=['hour', 'f0f2', 'tec', 'b0'],
-    )
+    if not sat_tec:
+        df = cast_data_to_dataframe(
+            select_hour_avr_for_day(ursi, date),
+            columns=['hour', 'f0f2', 'ion_tec', 'b0'],
+        )
+    else:
+        df = cast_data_to_dataframe(
+            select_2h_avr_for_day_with_sat_tec(ursi, date),
+            columns=['hour','f0f2', 'ion_tec', 'sat_tec', 'b0'],
+            sat_tec=True,
+        )
 
     sunrise, sunset = get_sunrise_sunset(date, select_coords_by_ursi(ursi))
     hour = df['hour']
@@ -132,9 +140,15 @@ def plot_tec_b0_for_day_graph(
         moon = df[(hour < sunrise) & (hour >= sunset)]
 
     if ax != None:
-        subplot_tec_b0_graph(sun, moon, date, ax, split, xlim, ylim, regression, const)
+        subplot_tec_b0_graph(
+            sun, moon, date, ax, split, xlim,
+            ylim, regression, const, sat_tec,
+        )
     else:
-        plot_tec_b0_graph(sun, moon, date, split, xlim, ylim, regression, const)
+        plot_tec_b0_graph(
+            sun, moon, date, split, xlim,
+            ylim, regression, const, sat_tec,
+        )
 
 
 def plot_tec_b0_for_each_day_in_month_graph(
@@ -145,6 +159,7 @@ def plot_tec_b0_for_each_day_in_month_graph(
     ylim=(None, None),
     regression: bool=True,
     const: bool=False,
+    sat_tec: bool=False,
 ) -> None:
     coords = select_coords_by_ursi(ursi)
     
@@ -173,7 +188,8 @@ def plot_tec_b0_for_each_day_in_month_graph(
         try:
             plot_tec_b0_for_day_graph(
                 ursi, f"2019-{str_month}-{str_day}",
-                axes[day - 1], split, xlim, ylim, regression, const,
+                axes[day - 1], split, xlim, ylim,
+                regression, const, sat_tec=sat_tec,
             )
         except Exception as ex:
             print(ex)

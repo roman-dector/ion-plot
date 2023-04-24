@@ -11,9 +11,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 from dal import select_hour_avr_for_day, select_coords_by_ursi
+from dal.models import select_2h_avr_for_day_with_sat_tec
 
 
-# TODO: fix linear reg here (coeff and const)
 def count_b0_ab_for_day(
     ursi: str,
     date: str,
@@ -112,32 +112,71 @@ def count_b0_t_spreading_for_year(ursi: str, year: int=2019) -> list[float]:
     
     return sun_result, moon_result
 
-def calc_b0_t_mean_for_day(
+def calc_b0_ab_mean_for_day(
     ursi: str,
     date: str,
-) -> tuple[float]:
+):
+    data = select_2h_avr_for_day_with_sat_tec(ursi, date)
     df = cast_data_to_dataframe(
-        select_hour_avr_for_day(ursi, date),
-        columns=['hour', 'f0f2', 'tec', 'b0'],
+        data,
+        columns=['hour', 'f0f2', 'ion_tec', 'sat_tec', 'b0'],
+        sat_tec=True,
     )
     
     sun, moon = split_df_to_sun_moon(df, ursi, date)
-    
-    mlr = lambda df: make_linear_regression(df['b0'], df['tec'])
-    
-    reg_sun = mlr(sun)
-    reg_moon = mlr(moon)
-    sun_t, sun_t_err = reg_sun.params[0], reg_sun.bse[0]
-    moon_t, moon_t_err = reg_moon.params[0], reg_moon.bse[0]
 
-    return ((sun_t, sun_t_err), (moon_t, moon_t_err))
+    mlr = lambda df, tec_name, turn: make_linear_regression(
+        y=df['b0'],
+        x=df[tec_name],
+        const=True,
+        turn=turn
+    )
+
+    ion_reg_sun = mlr(sun, 'ion_tec', False)
+    ion_sun_b, ion_sun_a = ion_reg_sun.params
+    ion_sun_b_err, ion_sun_a_err = ion_reg_sun.bse
+
+    ion_reg_moon = mlr(moon, 'ion_tec', True)
+    ion_moon_b, ion_moon_a = ion_reg_moon.params
+    ion_moon_b_err, ion_moon_a_err = ion_reg_moon.bse
+
+    sat_reg_sun = mlr(sun, 'sat_tec', False)
+    sat_sun_b, sat_sun_a = sat_reg_sun.params
+    sat_sun_b_err, sat_sun_a_err = sat_reg_sun.bse
+
+    sat_reg_moon = mlr(moon, 'sat_tec', True)
+    sat_moon_b, sat_moon_a = sat_reg_moon.params
+    sat_moon_b_err, sat_moon_a_err = sat_reg_moon.bse
+
+    return {
+        'ion': {
+            'sun': {
+                'a': {'value': ion_sun_a, 'err': ion_sun_a_err},
+                'b': {'value': ion_sun_b, 'err': ion_sun_b_err},
+            },
+            'moon': {
+                'a': {'value': ion_moon_a, 'err': ion_moon_a_err},
+                'b': {'value': ion_moon_b, 'err': ion_moon_b_err},
+            },
+        },
+        'sat': {
+            'sun': {
+                'a': {'value': sat_sun_a, 'err': sat_sun_a_err},
+                'b': {'value': sat_sun_b, 'err': sat_sun_b_err},
+            },
+            'moon': {
+                'a': {'value': sat_moon_a, 'err': sat_moon_a_err},
+                'b': {'value': sat_moon_b, 'err': sat_moon_b_err},
+            },
+        },
+    }
 
 
-def calc_b0_t_mean_for_month(
+def calc_b0_ab_mean_for_month(
     ursi: str,
     month: int,
-    year: int=2019,
-) -> tuple[float]:
+    year: int,
+):
     sun_range, moon_range = count_b0_t_spreading_for_month(ursi, month, year)
     
     sun_mean, sun_std_err = norm.fit(sun_range)

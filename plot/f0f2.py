@@ -1,17 +1,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.axis import Axis as Ax
 
+from matplotlib.axis import Axis as Ax
 from pandas import DataFrame as DF
 
-from dal import (
+from dal.models import (
     select_coords_by_ursi,
     select_hour_avr_for_day,
-)
-from dal.models import (
     select_2h_avr_for_day_with_sat_tec,
-    transform_ion_data,
-    transform_sat_data,
 )
 
 from plot.graph import plot_squared_graph
@@ -31,14 +27,17 @@ def plot_tec_f0f2_graph(
         ylim=(None, 30),
         regression: bool=True,
         const: bool=False,
+        sat_tec: bool=False,
 ):
+    x_name = 'sat_tec' if sat_tec else 'ion_tec'
+
     if not split:
         _, ax = plt.subplots(nrows=1, ncols=1, figsize=(15,10))
         ax.set_xlim(xlim[0], xlim[1])
         ax.set_ylim(ylim[0], ylim[1])
         plot_squared_graph(
             ax, pd.concat([sun, moon]),
-            'tec', 'f0f2', 'TEC', '$f_0F_2$',
+            x_name, 'f0f2', 'TEC', '$f_0F_2$',
             date, regression=regression, const=const,
         )
         return ax
@@ -51,18 +50,18 @@ def plot_tec_f0f2_graph(
     ax[1].set_ylim(ylim[0], ylim[1])
 
     plot_squared_graph(
-        ax[0], sun, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
+        ax[0], sun, x_name, 'f0f2', 'TEC', '$f_0F_2$',
         'Sun ' + date, color='orange', edgecolor='r',
         regression=regression, const=const,
     )
     plot_squared_graph(
-        ax[1], moon, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
+        ax[1], moon, x_name, 'f0f2', 'TEC', '$f_0F_2$',
         'Moon ' + date, color='purple', edgecolor='b',
-        regression=regression, const=const, moon=True,
+        regression=regression, const=const,
     )
     return ax
 
-    
+
 def subplot_tec_f0f2_graph(
         sun: DF,
         moon: DF,
@@ -73,11 +72,14 @@ def subplot_tec_f0f2_graph(
         ylim=(None, 30),
         regression: bool=True,
         const: bool=False,
+        sat_tec: bool=False,
 ) -> Ax:
+    x_name = 'sat_tec' if sat_tec else 'ion_tec'
+
     if not split:
         ax = plot_squared_graph(
             ax, pd.concat([sun, moon]),
-            'tec', 'f0f2', 'TEC', '$f_0F_2$', date,
+            x_name, 'f0f2', 'TEC', '$f_0F_2$', date,
             regression=regression, const=const,
         )
         ax.set_xlim(xlim[0], xlim[1])
@@ -88,14 +90,14 @@ def subplot_tec_f0f2_graph(
     ax.set_ylim(ylim[0], ylim[1])
 
     ax = plot_squared_graph(
-        ax, sun, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
+        ax, sun, x_name, 'f0f2', 'TEC', '$f_0F_2$',
         'Sun ' + date, color='orange', edgecolor='r',
         regression=regression, const=const,
     )
     ax = plot_squared_graph(
-        ax, moon, 'tec', 'f0f2', 'TEC', '$f_0F_2$',
+        ax, moon, x_name, 'f0f2', 'TEC', '$f_0F_2$',
         'Moon ' + date, color='purple', edgecolor='b',
-        regression=regression, const=const, moon=True,
+        regression=regression, const=const,
     )
     ax.grid()
 
@@ -116,18 +118,18 @@ def plot_tec_f0f2_for_day_graph(
     if not sat_tec:
         df = cast_data_to_dataframe(
             select_hour_avr_for_day(ursi, date),
-            columns=['hour', 'f0f2', 'tec', 'b0'],
+            columns=['hour', 'f0f2', 'ion_tec', 'b0'],
         )
     else:
         df = cast_data_to_dataframe(
             select_2h_avr_for_day_with_sat_tec(ursi, date),
-            columns=['hour','f0f2', 'ion_tec', 'tec', 'b0'],
+            columns=['hour','f0f2', 'ion_tec', 'sat_tec', 'b0'],
             sat_tec=True,
         )
 
     sunrise, sunset = get_sunrise_sunset(date, select_coords_by_ursi(ursi))
     hour = df['hour']
-    
+
     if sunrise < sunset:
         sun = df[(hour >= sunrise) & (hour < sunset)]
         moon = df[(hour < sunrise) | (hour >= sunset)]
@@ -136,9 +138,15 @@ def plot_tec_f0f2_for_day_graph(
         moon = df[(hour < sunrise) & (hour >= sunset)]
 
     if ax != None:
-        subplot_tec_f0f2_graph(sun, moon, date, ax, split, xlim, ylim, regression, const)
+        subplot_tec_f0f2_graph(
+            sun, moon, date, ax, split, xlim,
+            ylim, regression, const, sat_tec,
+        )
     else:
-        plot_tec_f0f2_graph(sun, moon, date, split, xlim, ylim, regression, const)
+        plot_tec_f0f2_graph(
+            sun, moon, date, split, xlim, ylim,
+            regression, const, sat_tec,
+        )
 
 
 def plot_tec_f0f2_for_each_day_in_month_graph(
