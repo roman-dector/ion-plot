@@ -14,6 +14,8 @@ from scipy.stats import norm
 from dal import select_coords_by_ursi
 from dal.models import (
     select_2h_avr_for_day_with_sat_tec,
+)
+from dal.handlers import (
     get_f0f2_k_spread_for_month,
 )
 
