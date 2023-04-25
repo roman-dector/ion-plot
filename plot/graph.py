@@ -190,7 +190,7 @@ def plot_tec_graph(
         edgecolor='b',
         regression=regression,
         const=const,
-        turn=(value == b0Val),
+        turn=(value == 'b0'),
     )
     return ax
 
@@ -203,14 +203,16 @@ def subplot_tec_graph(
     ax: Ax,
     split: bool=True,
     xlim=(None, 15),
-    ylim=(None, 300),
+    ylim=(None, 30),
     regression: bool=True,
     const: bool=False,
     sat_tec: bool=False,
 ) -> Ax:
-    print(f'START: {date=}')
     x_name = 'sat_tec' if sat_tec else 'ion_tec'
     y_label = '$f_0F_2$' if value == 'f0f2' else 'B0'
+
+    ax.set_xlim(xlim[0], xlim[1])
+    ax.set_ylim(ylim[0], ylim[1])
 
     if not split:
         ax = plot_linear_graph(
@@ -224,12 +226,7 @@ def subplot_tec_graph(
             regression=regression,
             const=const,
         )
-        ax.set_xlim(xlim[0], xlim[1])
-        ax.set_ylim(ylim[0], ylim[1])
         return ax
-
-    ax.set_xlim(xlim[0], xlim[1])
-    ax.set_ylim(ylim[0], ylim[1])
 
     ax = plot_linear_graph(
         ax=ax,
@@ -259,8 +256,6 @@ def subplot_tec_graph(
         turn=(value == 'b0'),
     )
     ax.grid()
-
-    print(f'DONE: {date=}')
 
     return ax
 
@@ -310,8 +305,8 @@ def plot_tec_for_day_graph(
             date=date,
             ax=ax,
             split=split,
-            x_lim=xlim,
-            y_lim=ylim,
+            xlim=xlim,
+            ylim=ylim,
             regression=regression,
             const=const,
             sat_tec=sat_tec,
