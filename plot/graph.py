@@ -139,7 +139,7 @@ def plot_tec_graph(
     sat_tec: bool=False,
 ):
     x_name = 'sat_tec' if sat_tec else 'ion_tec'
-    y_label = '$f_0F_2$' if value == f0f2Val else 'B0'
+    y_label = '$f_0F_2$' if value == 'f0f2' else 'B0'
 
     if not split:
         _, ax = plt.subplots(nrows=1, ncols=1, figsize=(15,10))
@@ -208,8 +208,9 @@ def subplot_tec_graph(
     const: bool=False,
     sat_tec: bool=False,
 ) -> Ax:
+    print(f'START: {date=}')
     x_name = 'sat_tec' if sat_tec else 'ion_tec'
-    y_label = '$f_0F_2$' if value == f0f2Val else 'B0'
+    y_label = '$f_0F_2$' if value == 'f0f2' else 'B0'
 
     if not split:
         ax = plot_linear_graph(
@@ -255,9 +256,11 @@ def subplot_tec_graph(
         edgecolor='b',
         regression=regression,
         const=const,
-        turn=(value == b0Val),
+        turn=(value == 'b0'),
     )
     ax.grid()
+
+    print(f'DONE: {date=}')
 
     return ax
 
@@ -269,7 +272,7 @@ def plot_tec_for_day_graph(
     ax = None,
     split = True,
     xlim=(None, 15),
-    ylim=(None, 300),
+    ylim=(None, 30),
     regression: bool=True,
     const: bool=False,
     sat_tec: bool=False,
@@ -280,10 +283,8 @@ def plot_tec_for_day_graph(
             columns=['hour', 'f0f2', 'ion_tec', 'b0'],
         )
     else:
-        data = select_2h_avr_for_day_with_sat_tec(ursi, date)
-        print(f'{data=}')
         df = cast_data_to_dataframe(
-            data,
+            select_2h_avr_for_day_with_sat_tec(ursi, date),
             columns=['hour','f0f2', 'ion_tec', 'sat_tec', 'b0'],
             sat_tec=True,
         )
@@ -380,7 +381,7 @@ def plot_tec_for_each_day_in_month_graph(
                 sat_tec=sat_tec,
             )
         except Exception as ex:
-            continue
+            print(ex)
 
 
 def plot_tec_f0f2_for_day_graph(
