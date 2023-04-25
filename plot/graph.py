@@ -280,8 +280,10 @@ def plot_tec_for_day_graph(
             columns=['hour', 'f0f2', 'ion_tec', 'b0'],
         )
     else:
+        data = select_2h_avr_for_day_with_sat_tec(ursi, date)
+        print(data)
         df = cast_data_to_dataframe(
-            select_2h_avr_for_day_with_sat_tec(ursi, date),
+            data,
             columns=['hour','f0f2', 'ion_tec', 'sat_tec', 'b0'],
             sat_tec=True,
         )
@@ -378,7 +380,7 @@ def plot_tec_for_each_day_in_month_graph(
                 sat_tec=sat_tec,
             )
         except Exception as ex:
-            print(ex)
+            continue
 
 
 def plot_tec_f0f2_for_day_graph(
