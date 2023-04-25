@@ -58,53 +58,6 @@ def calc_f0f2_k_mean_for_day(
     }
 
 
-# def get_f0f2_k_spread_for_month(
-#     ursi: str,
-#     month: int,
-#     year: int,
-# ):
-#     ion_sun = []
-#     ion_moon = []
-#     sat_sun = []
-#     sat_moon = []
-
-#     ion_sun_err = []
-#     ion_moon_err = []
-#     sat_sun_err = []
-#     sat_moon_err = []
-
-#     for day in range(1, get_month_days_count(month, year) + 1):
-#         str_month = f'0{month}' if month < 10 else f'{month}'
-#         str_day = f'0{day}' if day < 10 else f'{day}'
-#         date = f"{year}-{str_month}-{str_day}"
-
-#         try:
-#             k_mean = calc_f0f2_k_mean_for_day(ursi, date)
-
-#             ion_sun.append(k_mean['ion']['sun']['k'])
-#             ion_moon.append(k_mean['ion']['moon']['k'])
-#             sat_sun.append(k_mean['sat']['sun']['k'])
-#             sat_moon.append(k_mean['sat']['moon']['k'])
-
-#             ion_sun_err.append(k_mean['ion']['sun']['err'])
-#             ion_moon_err.append(k_mean['ion']['moon']['err'])
-#             sat_sun_err.append(k_mean['sat']['sun']['err'])
-#             sat_moon_err.append(k_mean['sat']['moon']['err'])
-#         except:
-#             continue
-
-#     return {
-#         'ion': {
-#             'sun': {'k': ion_sun, 'err': ion_sun_err},
-#             'moon': {'k':  ion_moon, 'err': ion_moon_err},
-#         },
-#         'sat': {
-#             'sun': {'k': sat_sun, 'err': sat_sun_err},
-#             'moon': {'k': sat_moon, 'err': sat_moon_err},
-#         },
-#     }
-
-
 def get_f0f2_k_spread_for_summer_winter(
     ursi: str,
     year: int,
@@ -224,43 +177,6 @@ def get_f0f2_k_spread_for_year(ursi: str, year: int):
             'moon': {'k': sat_moon, 'err': sat_moon_err},
         },
     }
-
-
-
-# def calc_f0f2_k_mean_for_month(
-#     ursi: str,
-#     month: int,
-#     year: int,
-# ):
-#     k_mean = calc_f0f2_k_spread_for_month(ursi, month, year)
-
-#     ion_sun_len = len(k_mean['ion']['sun']['k'])
-#     ion_moon_len = len(k_mean['ion']['moon']['k'])
-#     sat_sun_len = len(k_mean['sat']['sun']['k'])
-#     sat_moon_len = len(k_mean['sat']['moon']['k'])
-
-#     return {
-#         'ion': {
-#             'sun': {
-#                 'k': sum(k_mean['ion']['sun']['k']) / ion_sun_len,
-#                 'err': sum(k_mean['ion']['sun']['err']) / ion_sun_len,
-#             },
-#             'moon': {
-#                 'k':  sum(k_mean['ion']['moon']['k']) / ion_moon_len,
-#                 'err': sum(k_mean['ion']['moon']['err']) / ion_moon_len,
-#             },
-#         },
-#         'sat': {
-#             'sun': {
-#                 'k': sum(k_mean['sat']['sun']['k']) / sat_sun_len,
-#                 'err': sum(k_mean['sat']['sun']['err']) / sat_sun_len,
-#             },
-#             'moon': {
-#                 'k': sum(k_mean['sat']['moon']['k']) / sat_moon_len,
-#                 'err': sum(k_mean['sat']['moon']['err']) / sat_moon_len,
-#             },
-#         },
-#     }
 
 
 def plot_f0f2_k_spread_for_month(
