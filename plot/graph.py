@@ -40,7 +40,10 @@ def plot_graph(
         regression: bool=True,
         const: bool=False,
         turn: bool=False,
+        moon: bool=False,
 ) -> Ax:
+    props = dict(boxstyle='round', facecolor='white', alpha=0.5)
+
     if regression:
         if const:
             if turn:
@@ -52,22 +55,31 @@ def plot_graph(
                 linspace = np.linspace(0, max(x_ax), 100)
                 ax.plot(linspace, reg.predict(sm.add_constant(linspace)), c=edgecolor)
 
-            ax.set_title(
-                f"{title}, k={round(reg.params[1], 3)}, k_err={round(reg.bse[1], 3)},\n\
-                const={round(reg.params[0], 3)}, const_err={round(reg.bse[0], 3)}",
-                fontsize=15,
+            title =  f"{title}, k={round(reg.params[1], 1)}, k_err={round(reg.bse[1], 1)},\n\
+                const={round(reg.params[0], 1)}, const_err={round(reg.bse[0], 1)}"
+
+            ax.text(
+                0.05, 0.75 if moon else 0.95, title, transform=ax.transAxes,
+                fontsize=15, verticalalignment='top', bbox=props,
             )
+
         else:
             reg = make_linear_regression(y_ax, x_ax, const)
             linspace = np.linspace(0, max(x_ax), 100)
             ax.plot(linspace, reg.predict(linspace), c=edgecolor)
 
-            ax.set_title(
-                f"{title}, k={round(reg.params[0], 3)}, k_err={round(reg.bse[0], 3)}",
-                fontsize=15,
+            title = f"{title}, k={round(reg.params[0], 3)}, k_err={round(reg.bse[0], 3)}"
+
+            ax.text(
+                0.05, 0.75 if moon else 0.95, title, transform=ax.transAxes,
+                fontsize=15, verticalalignment='top', bbox=props,
             )
     else:
-        ax.set_title(f"{title}", fontsize=15)
+        title = f"{title}"
+        ax.text(
+            0.05, 0.75 if moon else 0.95, title, transform=ax.transAxes,
+            fontsize=15, verticalalignment='top', bbox=props,
+        )
     
     ax.set_xlabel(x_label, fontsize=15)
     ax.set_ylabel(y_label, fontsize=15)
@@ -90,13 +102,14 @@ def plot_linear_graph(
         regression: bool=True,
         const: bool=False,
         turn: bool=False,
+        moon: bool=False,
 ) -> Ax:
     x_ax = df[x_name]
     y_ax = df[y_name]
 
     return plot_graph(
             ax, x_ax, y_ax, x_label, y_label, title, color,
-            edgecolor, regression, const, turn,
+            edgecolor, regression, const, turn, moon,
     )
 
 
@@ -113,13 +126,14 @@ def plot_squared_graph(
         regression: bool=True,
         const: bool=False,
         turn: bool=False,
+        moon: bool=False,
 ) -> Ax:
     x_ax = df[x_name]
     y_ax = [y**2 for y in df[y_name]]
 
     return plot_graph(
-            ax, x_ax, y_ax, x_label, y_label, title, color,
-            edgecolor, regression, const, turn,
+        ax, x_ax, y_ax, x_label, y_label, title, color,
+        edgecolor, regression, const, turn, moon,
     )
 
 
@@ -139,13 +153,18 @@ def plot_tec_graph(
     sat_tec: bool=False,
 ):
     x_name = 'sat_tec' if sat_tec else 'ion_tec'
-    y_label = '$f_0F_2$' if value == 'f0f2' else 'B0'
+    if value == 'f0f2':
+        y_label = '$f_0F_2^2$'
+        graph = plot_squared_graph
+    else:
+        y_label = 'B0'
+        graph = plot_linear_graph
 
     if not split:
         _, ax = plt.subplots(nrows=1, ncols=1, figsize=(15,10))
         ax.set_xlim(xlim[0], xlim[1])
         ax.set_ylim(ylim[0], ylim[1])
-        plot_linear_graph(
+        graph(
             ax=ax,
             df=pd.concat([sun, moon]),
             x_name=x_name,
@@ -165,7 +184,7 @@ def plot_tec_graph(
     ax[1].set_xlim(xlim[0], xlim[1])
     ax[1].set_ylim(ylim[0], ylim[1])
 
-    plot_linear_graph(
+    graph(
         ax=ax[0],
         df=sun,
         x_name=x_name,
@@ -178,7 +197,7 @@ def plot_tec_graph(
         regression=regression,
         const=const,
     )
-    plot_linear_graph(
+    graph(
         ax=ax[1],
         df=moon,
         x_name=x_name,
@@ -191,6 +210,7 @@ def plot_tec_graph(
         regression=regression,
         const=const,
         turn=(value == 'b0'),
+        moon=True,
     )
     return ax
 
@@ -209,13 +229,18 @@ def subplot_tec_graph(
     sat_tec: bool=False,
 ) -> Ax:
     x_name = 'sat_tec' if sat_tec else 'ion_tec'
-    y_label = '$f_0F_2$' if value == 'f0f2' else 'B0'
+    if value == 'f0f2':
+        y_label = '$f_0F_2^2$'
+        graph = plot_squared_graph
+    else:
+        y_label = 'B0'
+        graph = plot_linear_graph
 
     ax.set_xlim(xlim[0], xlim[1])
     ax.set_ylim(ylim[0], ylim[1])
 
     if not split:
-        ax = plot_linear_graph(
+        ax = graph(
             ax=ax,
             df=pd.concat([sun, moon]),
             x_name=x_name,
@@ -228,7 +253,7 @@ def subplot_tec_graph(
         )
         return ax
 
-    ax = plot_linear_graph(
+    ax = graph(
         ax=ax,
         df=sun,
         x_name=x_name,
@@ -241,7 +266,7 @@ def subplot_tec_graph(
         regression=regression,
         const=const,
     )
-    ax = plot_linear_graph(
+    ax = graph(
         ax=ax,
         df=moon,
         x_name=x_name,
@@ -254,6 +279,7 @@ def subplot_tec_graph(
         regression=regression,
         const=const,
         turn=(value == 'b0'),
+        moon=True,
     )
     ax.grid()
 

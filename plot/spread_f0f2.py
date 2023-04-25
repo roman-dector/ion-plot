@@ -120,7 +120,7 @@ def plot_f0f2_k_spread_for_month(
     r'$\sigma^2=%.2f$' % (std_win_moon, )))
 
     # these are matplotlib.patch.Patch properties
-    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+    props = dict(boxstyle='round', facecolor='white', alpha=0.5)
     
     # place a text box in upper left in axes coords
     ax[0][0].text(0.05, 0.95, textstr_ion_sun, transform=ax[0][0].transAxes, fontsize=14,
