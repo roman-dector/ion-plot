@@ -160,7 +160,7 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
     f0f2 = [r[1] for r in row_data]
 
     jmodel_f0f2 = [
-        calc_f0F2(calc_tau(date, r[0], coords['lat'], coords['long']), r[2])
+        calc_f0F2(calc_tau(date, r[0]+':00:00', coords['lat'], coords['long']), r[2])
         for r in row_data
     ]
 
