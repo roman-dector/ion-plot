@@ -281,7 +281,7 @@ def plot_tec_for_day_graph(
         )
     else:
         data = select_2h_avr_for_day_with_sat_tec(ursi, date)
-        print(data)
+        print(f'{data=}')
         df = cast_data_to_dataframe(
             data,
             columns=['hour','f0f2', 'ion_tec', 'sat_tec', 'b0'],
