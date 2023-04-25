@@ -5,7 +5,6 @@ from aacgmv2 import get_aacgm_coord
 from dateutil import tz
 from timezonefinder import TimezoneFinder
 
-import pandas as pd
 import matplotlib.pyplot as plt
 
 from plot.utils import (
@@ -18,6 +17,7 @@ from dal.models import (
     select_solar_flux_81_mean,
     select_f0f2_sat_tec,
     select_coords_by_ursi,
+    select_ion_tec_sat_tec,
 )
 
 c1 = 0.25031
@@ -158,13 +158,15 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
     row_data = select_f0f2_sat_tec(ursi, date)
     hour = [r[0] for r in row_data]
     f0f2 = [r[1] for r in row_data]
+    sat_tec = [r[2] for r in row_data]
+
 
     jmodel_f0f2 = [
-        calc_f0F2(calc_tau(date, r[0]+':00:00', coords['lat'], coords['long']), r[2])
+        calc_f0F2(calc_tau(date, r[0]+':00:00', coords['lat'], coords['long']), r[2])*100
         for r in row_data
     ]
 
-    _, ax = plt.subplots(nrows=1, ncols=2, figsize=(15,10))
+    _, ax = plt.subplots(nrows=1, ncols=2, figsize=(20,8))
 
     plot_graph(
         ax=ax[0],
@@ -174,6 +176,7 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
         y_label='$f_0F_2$',
         title='green: real',
         regression=False,
+        solid=True,
     )
     plot_graph(
         ax=ax[0],
@@ -186,6 +189,7 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
         edgecolor='purple',
         regression=False,
         moon=True,
+        solid=True,
     )
 
     plot_graph(
@@ -196,11 +200,12 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
         y_label='k',
         title='green: real',
         regression=False,
+        solid=True,
     )
     plot_graph(
         ax=ax[1],
         x_ax=hour,
-        y_ax=[round(f**2/t[2], 1) for f,t in zip(jmodel_f0f2, row_data)],
+        y_ax=[round((f)**2/t, 1) for f,t in zip(jmodel_f0f2, sat_tec)],
         x_label='hour',
         y_label='k',
         title='blue: model',
@@ -208,4 +213,28 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
         edgecolor='purple',
         regression=False,
         moon=True,
+        solid=True,
+    )
+
+
+def plot_compare_ion_tec_sat_tec(ursi, date):
+    coords = select_coords_by_ursi(ursi)
+
+    row_data = select_ion_tec_sat_tec(ursi, date)
+
+    hour = [r[0] for r in row_data]
+    ion_tec = [r[1] for r in row_data]
+    sat_tec = [r[2] for r in row_data]
+
+    _, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
+
+    plot_graph(
+        ax=ax,
+        x_ax=ion_tec,
+        y_ax=sat_tec,
+        x_label='ion_tec',
+        y_label='sat_tec',
+        title=f"{ursi}, lat: {coords['lat']}, long: {coords['long']}",
+        regression=True,
+        const=True,
     )

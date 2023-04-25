@@ -41,6 +41,7 @@ def plot_graph(
         const: bool=False,
         turn: bool=False,
         moon: bool=False,
+        solid: bool=False,
 ) -> Ax:
     props = dict(boxstyle='round', facecolor='white', alpha=0.5)
 
@@ -59,7 +60,7 @@ def plot_graph(
                 const={round(reg.params[0], 1)}, const_err={round(reg.bse[0], 1)}"
 
             ax.text(
-                0.05, 0.75 if moon else 0.95, title, transform=ax.transAxes,
+                0.05, 0.9 if moon else 0.95, title, transform=ax.transAxes,
                 fontsize=15, verticalalignment='top', bbox=props,
             )
 
@@ -71,19 +72,22 @@ def plot_graph(
             title = f"{title}, k={round(reg.params[0], 3)}, k_err={round(reg.bse[0], 3)}"
 
             ax.text(
-                0.05, 0.75 if moon else 0.95, title, transform=ax.transAxes,
+                0.05, 0.9 if moon else 0.95, title, transform=ax.transAxes,
                 fontsize=15, verticalalignment='top', bbox=props,
             )
     else:
         title = f"{title}"
         ax.text(
-            0.05, 0.75 if moon else 0.95, title, transform=ax.transAxes,
+            0.05, 0.9 if moon else 0.95, title, transform=ax.transAxes,
             fontsize=15, verticalalignment='top', bbox=props,
         )
     
     ax.set_xlabel(x_label, fontsize=15)
     ax.set_ylabel(y_label, fontsize=15)
-    ax.scatter(x=x_ax, y=y_ax, marker='o', c=color, edgecolor=edgecolor)
+    if not solid:
+        ax.scatter(x=x_ax, y=y_ax, marker='o', c=color, edgecolor=edgecolor)
+    else:
+        ax.plot(x_ax, y_ax, c=color)
     ax.grid()
 
     return ax
