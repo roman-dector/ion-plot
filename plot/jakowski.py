@@ -262,51 +262,76 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
     )
 
 
-def plot_compare_ion_tec_sat_tec(ursi, date):
+def plot_compare_ion_tec_sat_tec(ursi, date, split: bool=False):
     coords = select_coords_by_ursi(ursi)
-
     row_data = select_ion_tec_sat_tec(ursi, date)
-    sun_data, moon_data = split_to_sun_moon(row_data, ursi, date)
 
-    ion_tec_sun = [r[1] for r in sun_data]
-    ion_tec_moon = [r[1] for r in moon_data]
-    sat_tec_sun = [r[2] for r in sun_data]
-    sat_tec_moon = [r[2] for r in moon_data]
+    if not split:
+        ion_tec = [r[1] for r in row_data]
+        sat_tec = [r[2] for r in row_data]
 
-    r_sun = round(pearsonr(sat_tec_sun, ion_tec_sun)[0], 2)
-    r_moon = round(pearsonr(sat_tec_moon, ion_tec_moon)[0], 2)
+        r = round(pearsonr(sat_tec, ion_tec)[0], 2)
 
-    _, ax = plt.subplots(nrows=1, ncols=2, figsize=(20,10))
+        _, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
+        ax.set_xlim(15, 15)
 
-    ax[0].set_xlim(15, 15)
-    ax[1].set_xlim(15, 15)
+        ax.set_title(
+            f"{ursi} lat: {coords['lat']}, long: {coords['lat']},\nr={r_sun}",
+            fontsize=15,
+        )
 
-    ax[0].set_title(
-        f"{ursi} Sun lat: {coords['lat']}, long: {coords['lat']},\nr={r_sun}",
-        fontsize=15,
-    )
-    ax[1].set_title(
-        f"{ursi} Moon lat: {coords['lat']}, long: {coords['lat']},\nr={r_moon}",
-        fontsize=15,
-    )
+        plot_graph(
+            ax=ax,
+            x_ax=ion_tec,
+            y_ax=sat_tec,
+            x_label='ion_tec',
+            y_label='sat_tec',
+            title=f"",
+            regression=True,
+            const=True,
+        )
+    else:
+        sun_data, moon_data = split_to_sun_moon(row_data, ursi, date)
 
-    plot_graph(
-        ax=ax[0],
-        x_ax=ion_tec_sun,
-        y_ax=sat_tec_sun,
-        x_label='ion_tec',
-        y_label='sat_tec',
-        title=f"",
-        regression=True,
-        const=True,
-    )
-    plot_graph(
-        ax=ax[1],
-        x_ax=ion_tec_moon,
-        y_ax=sat_tec_moon,
-        x_label='ion_tec',
-        y_label='sat_tec',
-        title=f"",
-        regression=True,
-        const=True,
-    )
+        ion_tec_sun = [r[1] for r in sun_data]
+        ion_tec_moon = [r[1] for r in moon_data]
+        sat_tec_sun = [r[2] for r in sun_data]
+        sat_tec_moon = [r[2] for r in moon_data]
+
+        r_sun = round(pearsonr(sat_tec_sun, ion_tec_sun)[0], 2)
+        r_moon = round(pearsonr(sat_tec_moon, ion_tec_moon)[0], 2)
+
+        _, ax = plt.subplots(nrows=1, ncols=2, figsize=(20,10))
+
+        ax[0].set_xlim(15, 15)
+        ax[1].set_xlim(15, 15)
+
+        ax[0].set_title(
+            f"{ursi} Sun lat: {coords['lat']}, long: {coords['lat']},\nr={r_sun}",
+            fontsize=15,
+        )
+        ax[1].set_title(
+            f"{ursi} Moon lat: {coords['lat']}, long: {coords['lat']},\nr={r_moon}",
+            fontsize=15,
+        )
+
+        plot_graph(
+            ax=ax[0],
+            x_ax=ion_tec_sun,
+            y_ax=sat_tec_sun,
+            x_label='ion_tec',
+            y_label='sat_tec',
+            title=f"",
+            regression=True,
+            const=True,
+        )
+        plot_graph(
+            ax=ax[1],
+            x_ax=ion_tec_moon,
+            y_ax=sat_tec_moon,
+            x_label='ion_tec',
+            y_label='sat_tec',
+            title=f"",
+            regression=True,
+            const=True,
+        )
