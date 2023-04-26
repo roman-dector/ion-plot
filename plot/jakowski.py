@@ -264,15 +264,12 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
 
 def plot_compare_ion_tec_sat_tec(ursi, date):
     coords = select_coords_by_ursi(ursi)
-    sunrise, sunset = get_sunrise_sunset(date, coords)
 
     row_data = select_ion_tec_sat_tec(ursi, date)
-    hour = [r[0] for r in row_data]
-
     sun_data, moon_data = split_to_sun_moon(row_data, ursi, date)
 
     ion_tec_sun = [r[1] for r in sun_data]
-    ion_tec_moon = [r[1] for r in sun_data]
+    ion_tec_moon = [r[1] for r in moon_data]
     sat_tec_sun = [r[2] for r in sun_data]
     sat_tec_moon = [r[2] for r in moon_data]
 
@@ -280,6 +277,9 @@ def plot_compare_ion_tec_sat_tec(ursi, date):
     r_moon = round(pearsonr(sat_tec_moon, ion_tec_moon)[0], 2)
 
     _, ax = plt.subplots(nrows=1, ncols=2, figsize=(20,10))
+
+    ax[0].set_xlim(15, 15)
+    ax[1].set_xlim(15, 15)
 
     ax[0].set_title(
         f"{ursi} Sun lat: {coords['lat']}, long: {coords['lat']},\nr={r_sun}",
@@ -300,7 +300,6 @@ def plot_compare_ion_tec_sat_tec(ursi, date):
         regression=True,
         const=True,
     )
-
     plot_graph(
         ax=ax[1],
         x_ax=ion_tec_moon,

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "plot"
-version = "0.1.61"
+version = "0.1.62"
 description = ""
 authors = ["roman-dector <roman.schaposhnikov@gmail.com>"]
 
