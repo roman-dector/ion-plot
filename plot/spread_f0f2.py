@@ -69,7 +69,7 @@ def plot_f0f2_k_spread_for_month(
     coords = select_coords_by_ursi(ursi)
     ion_sun_k, ion_moon_k, sat_sun_k, sat_moon_k = get_f0f2_k_spread_for_month(ursi, month, year)
     
-    fig, ax = plt.subplots(ncols=2, nrows=2, figsize=(15, 6))
+    fig, ax = plt.subplots(ncols=3, nrows=2, figsize=(15, 6))
     fig.suptitle(
         f"{ursi}, lat: {coords['lat']}  long: {coords['long']}, Year: {year} Month: {month}",
         fontsize=18, y=0.98,
@@ -79,11 +79,15 @@ def plot_f0f2_k_spread_for_month(
     ax[0][1].set_title('Ion-Moon', fontsize=15)
     ax[1][0].set_title('Sat-Sun', fontsize=15)
     ax[1][1].set_title('Sat-Moon', fontsize=15)
+    ax[2][0].set_title('Jakowski-Sun', fontsize=15)
+    ax[2][1].set_title('Jakowski-Moon', fontsize=15)
     
     ax[0][0].grid()
     ax[0][1].grid()
     ax[1][0].grid()
     ax[1][1].grid()
+    ax[2][0].grid()
+    ax[2][1].grid()
     
     ax[0][0].set_xlim(x_lim[0], x_lim[1])
     ax[0][0].set_ylim(y_lim[0], y_lim[1])
@@ -93,11 +97,17 @@ def plot_f0f2_k_spread_for_month(
     ax[1][0].set_ylim(y_lim[0], y_lim[1])
     ax[1][1].set_xlim(x_lim[0], x_lim[1])
     ax[1][1].set_ylim(y_lim[0], y_lim[1])
+    ax[2][0].set_xlim(x_lim[0], x_lim[1])
+    ax[2][0].set_ylim(y_lim[0], y_lim[1])
+    ax[2][1].set_xlim(x_lim[0], x_lim[1])
+    ax[2][1].set_ylim(y_lim[0], y_lim[1])
 
     sns.histplot(ion_sun_k, kde=True, ax=ax[0][0])
     sns.histplot(ion_moon_k, kde=True, ax=ax[0][1])
     sns.histplot(sat_sun_k, kde=True, ax=ax[1][0])
     sns.histplot(sat_moon_k, kde=True, ax=ax[1][1])
+    sns.histplot(j_sun_k, kde=True, ax=ax[2][0])
+    sns.histplot(j_moon_k, kde=True, ax=ax[2][1])
     
     mu_sum_sun, std_sum_sun = norm.fit(ion_sun_k)
     textstr_ion_sun = '\n'.join((
@@ -131,6 +141,81 @@ def plot_f0f2_k_spread_for_month(
             verticalalignment='top', bbox=props)
     ax[1][1].text(0.05, 0.95, textstr_sat_moon, transform=ax[1][1].transAxes, fontsize=14,
             verticalalignment='top', bbox=props)
+
+
+
+# def plot_f0f2_k_spread_for_month(
+#     ursi: str,
+#     month: int,
+#     year: int,
+#     x_lim=(None, 10),
+#     y_lim=(None, 20),
+# ):
+#     coords = select_coords_by_ursi(ursi)
+#     ion_sun_k, ion_moon_k, sat_sun_k, sat_moon_k = get_f0f2_k_spread_for_month(ursi, month, year)
+    
+#     fig, ax = plt.subplots(ncols=2, nrows=2, figsize=(15, 6))
+#     fig.suptitle(
+#         f"{ursi}, lat: {coords['lat']}  long: {coords['long']}, Year: {year} Month: {month}",
+#         fontsize=18, y=0.98,
+#     )
+
+#     ax[0][0].set_title('Ion-Sun', fontsize=15)
+#     ax[0][1].set_title('Ion-Moon', fontsize=15)
+#     ax[1][0].set_title('Sat-Sun', fontsize=15)
+#     ax[1][1].set_title('Sat-Moon', fontsize=15)
+    
+#     ax[0][0].grid()
+#     ax[0][1].grid()
+#     ax[1][0].grid()
+#     ax[1][1].grid()
+    
+#     ax[0][0].set_xlim(x_lim[0], x_lim[1])
+#     ax[0][0].set_ylim(y_lim[0], y_lim[1])
+#     ax[0][1].set_xlim(x_lim[0], x_lim[1])
+#     ax[0][1].set_ylim(y_lim[0], y_lim[1])
+#     ax[1][0].set_xlim(x_lim[0], x_lim[1])
+#     ax[1][0].set_ylim(y_lim[0], y_lim[1])
+#     ax[1][1].set_xlim(x_lim[0], x_lim[1])
+#     ax[1][1].set_ylim(y_lim[0], y_lim[1])
+
+#     sns.histplot(ion_sun_k, kde=True, ax=ax[0][0])
+#     sns.histplot(ion_moon_k, kde=True, ax=ax[0][1])
+#     sns.histplot(sat_sun_k, kde=True, ax=ax[1][0])
+#     sns.histplot(sat_moon_k, kde=True, ax=ax[1][1])
+    
+#     mu_sum_sun, std_sum_sun = norm.fit(ion_sun_k)
+#     textstr_ion_sun = '\n'.join((
+#     r'$k=%.2f$' % (mu_sum_sun, ),
+#     r'$\sigma^2=%.2f$' % (std_sum_sun, )))
+    
+#     mu_sum_moon, std_sum_moon = norm.fit(ion_moon_k)
+#     textstr_ion_moon = '\n'.join((
+#     r'$k=%.2f$' % (mu_sum_moon, ),
+#     r'$\sigma^2=%.2f$' % (std_sum_moon, )))
+    
+#     mu_win_sun, std_win_sun = norm.fit(sat_sun_k)
+#     textstr_sat_sun = '\n'.join((
+#     r'$k=%.2f$' % (mu_win_sun, ),
+#     r'$\sigma^2=%.2f$' % (std_win_sun, )))
+    
+#     mu_win_moon, std_win_moon = norm.fit(sat_moon_k)
+#     textstr_sat_moon = '\n'.join((
+#     r'$k=%.2f$' % (mu_win_moon, ),
+#     r'$\sigma^2=%.2f$' % (std_win_moon, )))
+
+#     # these are matplotlib.patch.Patch properties
+#     props = dict(boxstyle='round', facecolor='white', alpha=0.5)
+    
+#     # place a text box in upper left in axes coords
+#     ax[0][0].text(0.05, 0.95, textstr_ion_sun, transform=ax[0][0].transAxes, fontsize=14,
+#             verticalalignment='top', bbox=props)
+#     ax[0][1].text(0.05, 0.95, textstr_ion_moon, transform=ax[0][1].transAxes, fontsize=14,
+#             verticalalignment='top', bbox=props)
+#     ax[1][0].text(0.05, 0.95, textstr_sat_sun, transform=ax[1][0].transAxes, fontsize=14,
+#             verticalalignment='top', bbox=props)
+#     ax[1][1].text(0.05, 0.95, textstr_sat_moon, transform=ax[1][1].transAxes, fontsize=14,
+#             verticalalignment='top', bbox=props)
 
 
 def plot_f0f2_k_spread_for_summer_winter(

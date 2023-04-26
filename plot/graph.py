@@ -56,8 +56,8 @@ def plot_graph(
                 linspace = np.linspace(0, max(x_ax), 100)
                 ax.plot(linspace, reg.predict(sm.add_constant(linspace)), c=edgecolor)
 
-            title =  f"{title}, k={round(reg.params[1], 1)}, k_err={round(reg.bse[1], 1)},\n\
-                const={round(reg.params[0], 1)}, const_err={round(reg.bse[0], 1)}"
+            title =  title + f"k={round(reg.params[1], 1)}, k_err={round(reg.bse[1], 1)},\n\
+const={round(reg.params[0], 1)}, const_err={round(reg.bse[0], 1)}"
 
             ax.text(
                 0.05, 0.9 if moon else 0.95, title, transform=ax.transAxes,

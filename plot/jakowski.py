@@ -6,17 +6,18 @@ from dateutil import tz
 from timezonefinder import TimezoneFinder
 
 import matplotlib.pyplot as plt
+from scipy.stats import pearsonr
 
 from plot.utils import (
     convert_iso_to_day_of_year,
-    cast_data_to_dataframe,
+    get_sunrise_sunset,
 )
 from plot.graph import ( plot_graph )
 from dal.models import (
+    select_coords_by_ursi,
     select_solar_flux_day_mean,
     select_solar_flux_81_mean,
     select_f0f2_sat_tec,
-    select_coords_by_ursi,
     select_ion_tec_sat_tec,
 )
 
@@ -148,25 +149,69 @@ def calc_tau(
     )
 
 
-def calc_f0F2(tau, TEC):
-    return sqrt(1/(12.4 * tau) * TEC)
+Z = 1/12.4
+
+def calc_k(
+    date: str,
+    time: str,
+    lat: float,
+    long: float,
+):
+    return 1e4 * Z / calc_tau(date, time, lat, long)
+
+
+def calc_f0F2(k, TEC):
+    return sqrt(k * TEC)
+
+
+def split_to_sun_moon(data, ursi, date):
+    sunrise, sunset = get_sunrise_sunset(date, select_coords_by_ursi(ursi))
+
+    if sunrise < sunset:
+        # sun = df[(hour >= sunrise) & (hour < sunset)]
+        # moon = df[(hour < sunrise) | (hour >= sunset)]
+        sun = [r for r in data if (r[0] >= sunrise) and (r[0] < sunset)]
+        moon = [r for r in data if (r[0] < sunrise) or (r[0] >= sunset)]
+    else:
+        # sun = df[(hour >= sunrise) | (hour < sunset)]
+        # moon = df[(hour < sunrise) & (hour >= sunset)]
+        sun = [r for r in data if (r[0] >= sunrise) or (r[0] < sunset)]
+        moon = [r for r in data if (r[0] < sunrise) and (r[0] >= sunset)]
+        
+    return sun, moon
+
 
 
 def plot_compare_jmodel_ion_f0f2(ursi, date):
     coords = select_coords_by_ursi(ursi)
+    lat, long = coords['lat'], coords['long']
 
     row_data = select_f0f2_sat_tec(ursi, date)
     hour = [r[0] for r in row_data]
     f0f2 = [r[1] for r in row_data]
     sat_tec = [r[2] for r in row_data]
 
-
     jmodel_f0f2 = [
-        calc_f0F2(calc_tau(date, r[0]+':00:00', coords['lat'], coords['long']), r[2])*100
+        calc_f0F2(calc_k(date, r[0]+':00:00', lat, long), r[2])
         for r in row_data
     ]
 
+    k = [round(r[1]**2/r[2], 1) for r in row_data]
+    jmodel_k = [round(calc_k(date, h+':00:00', lat, long), 1) for h in hour]
+
+    r1 = round(pearsonr(f0f2, jmodel_f0f2)[0], 2)
+    r2 = round(pearsonr(k, jmodel_k)[0], 2)
+
     _, ax = plt.subplots(nrows=1, ncols=2, figsize=(20,8))
+
+    ax[0].set_title(
+        f"{ursi}, lat: {coords['lat']}, long: {coords['lat']}, r={r1}",
+        fontsize=15,
+    )
+    ax[1].set_title(
+        f"{ursi}, lat: {coords['lat']}, long: {coords['lat']}, r={r2}",
+        fontsize=15,
+    )
 
     plot_graph(
         ax=ax[0],
@@ -195,7 +240,7 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
     plot_graph(
         ax=ax[1],
         x_ax=hour,
-        y_ax=[round(r[1]**2/r[2], 1) for r in row_data],
+        y_ax=k,
         x_label='hour',
         y_label='k',
         title='green: real',
@@ -205,7 +250,7 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
     plot_graph(
         ax=ax[1],
         x_ax=hour,
-        y_ax=[round((f)**2/t, 1) for f,t in zip(jmodel_f0f2, sat_tec)],
+        y_ax=jmodel_k,
         x_label='hour',
         y_label='k',
         title='blue: model',
@@ -219,22 +264,50 @@ def plot_compare_jmodel_ion_f0f2(ursi, date):
 
 def plot_compare_ion_tec_sat_tec(ursi, date):
     coords = select_coords_by_ursi(ursi)
+    sunrise, sunset = get_sunrise_sunset(date, coords)
 
     row_data = select_ion_tec_sat_tec(ursi, date)
-
     hour = [r[0] for r in row_data]
-    ion_tec = [r[1] for r in row_data]
-    sat_tec = [r[2] for r in row_data]
 
-    _, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
+    sun_data, moon_data = split_to_sun_moon(row_data, ursi, date)
+
+    ion_tec_sun = [r[1] for r in sun_data]
+    ion_tec_moon = [r[1] for r in sun_data]
+    sat_tec_sun = [r[2] for r in sun_data]
+    sat_tec_moon = [r[2] for r in moon_data]
+
+    r_sun = round(pearsonr(sat_tec_sun, ion_tec_sun)[0], 2)
+    r_moon = round(pearsonr(sat_tec_moon, ion_tec_moon)[0], 2)
+
+    _, ax = plt.subplots(nrows=1, ncols=2, figsize=(20,10))
+
+    ax[0].set_title(
+        f"{ursi} Sun lat: {coords['lat']}, long: {coords['lat']},\nr={r_sun}",
+        fontsize=15,
+    )
+    ax[1].set_title(
+        f"{ursi} Moon lat: {coords['lat']}, long: {coords['lat']},\nr={r_moon}",
+        fontsize=15,
+    )
 
     plot_graph(
-        ax=ax,
-        x_ax=ion_tec,
-        y_ax=sat_tec,
+        ax=ax[0],
+        x_ax=ion_tec_sun,
+        y_ax=sat_tec_sun,
         x_label='ion_tec',
         y_label='sat_tec',
-        title=f"{ursi}, lat: {coords['lat']}, long: {coords['long']}",
+        title=f"",
+        regression=True,
+        const=True,
+    )
+
+    plot_graph(
+        ax=ax[1],
+        x_ax=ion_tec_moon,
+        y_ax=sat_tec_moon,
+        x_label='ion_tec',
+        y_label='sat_tec',
+        title=f"",
         regression=True,
         const=True,
     )
