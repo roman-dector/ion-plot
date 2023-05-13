@@ -1,41 +1,90 @@
 from plot.graph import plot_graph
 from plot.utils import (
-    cast_data_to_dataframe,
     get_month_days_count,
-    make_linear_regression,
-    split_df_to_sun_moon,
-    north_summer,
-    north_winter,
 )
 import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.stats import norm
-from dal import select_hour_avr_for_day, select_coords_by_ursi
-from dal.models import select_2h_avr_for_day_with_sat_tec
+from dal import select_coords_by_ursi
+from dal.handlers import (
+    get_b0_ab_spread_for_month,
+    get_b0_ab_spread_for_summer_winter,
+    get_b0_ab_spread_for_year,
+)
 
 
-def count_b0_ab_for_day(
+def plot_b0f2_ab_spread_for_month(
     ursi: str,
-    date: str,
-) -> tuple[tuple[float]]:
-    df = cast_data_to_dataframe(
-        select_hour_avr_for_day(ursi, date),
-        columns=['hour', 'f0f2', 'tec', 'b0'],
-    )
-    
-    sun, moon = split_df_to_sun_moon(df, ursi, date)
-    
-    mlr = lambda df: make_linear_regression(df['b0'], df['tec'], True)
-    sun_reg = mlr(sun)
-    moon_reg = mlr(moon)
+    month: int,
+    year: int,
+    x_lim=(None, 10),
+    y_lim=(None, 20),
+):
+    coords = select_coords_by_ursi(ursi)
+    sat_sun_k, sat_moon_k = get_b0_ab_spread_for_month(ursi, month, year)
 
-
-    return (
-        (sun_reg.params[1], sun_reg.bse[1]),
-        (sun_reg.params[0], sun_reg.bse[0]),
-        (moon_reg.params[1], moon_reg.bse[1]),
-        (moon_reg.params[0], moon_reg.bse[0]),
+    fig, ax = plt.subplots(ncols=2, nrows=2, figsize=(15, 6))
+    fig.suptitle(
+        f"{ursi}, lat: {coords['lat']}  long: {coords['long']}, Year: {year} Month: {month}",
+        fontsize=18, y=0.98,
     )
+
+    ax[0][0].set_title('Ion-Sun', fontsize=15)
+    ax[0][1].set_title('Ion-Moon', fontsize=15)
+    ax[1][0].set_title('Sat-Sun', fontsize=15)
+    ax[1][1].set_title('Sat-Moon', fontsize=15)
+    
+    ax[0][0].grid()
+    ax[0][1].grid()
+    ax[1][0].grid()
+    ax[1][1].grid()
+    
+    ax[0][0].set_xlim(x_lim[0], x_lim[1])
+    ax[0][0].set_ylim(y_lim[0], y_lim[1])
+    ax[0][1].set_xlim(x_lim[0], x_lim[1])
+    ax[0][1].set_ylim(y_lim[0], y_lim[1])
+    ax[1][0].set_xlim(x_lim[0], x_lim[1])
+    ax[1][0].set_ylim(y_lim[0], y_lim[1])
+    ax[1][1].set_xlim(x_lim[0], x_lim[1])
+    ax[1][1].set_ylim(y_lim[0], y_lim[1])
+
+    sns.histplot(ion_sun_k, kde=True, ax=ax[0][0])
+    sns.histplot(ion_moon_k, kde=True, ax=ax[0][1])
+    sns.histplot(sat_sun_k, kde=True, ax=ax[1][0])
+    sns.histplot(sat_moon_k, kde=True, ax=ax[1][1])
+
+    mu_sum_sun, std_sum_sun = norm.fit(ion_sun_k)
+    textstr_ion_sun = '\n'.join((
+    r'$k=%.2f$' % (mu_sum_sun, ),
+    r'$\sigma^2=%.2f$' % (std_sum_sun, )))
+    
+    mu_sum_moon, std_sum_moon = norm.fit(ion_moon_k)
+    textstr_ion_moon = '\n'.join((
+    r'$k=%.2f$' % (mu_sum_moon, ),
+    r'$\sigma^2=%.2f$' % (std_sum_moon, )))
+    
+    mu_win_sun, std_win_sun = norm.fit(sat_sun_k)
+    textstr_sat_sun = '\n'.join((
+    r'$k=%.2f$' % (mu_win_sun, ),
+    r'$\sigma^2=%.2f$' % (std_win_sun, )))
+    
+    mu_win_moon, std_win_moon = norm.fit(sat_moon_k)
+    textstr_sat_moon = '\n'.join((
+    r'$k=%.2f$' % (mu_win_moon, ),
+    r'$\sigma^2=%.2f$' % (std_win_moon, )))
+
+    # these are matplotlib.patch.Patch properties
+    props = dict(boxstyle='round', facecolor='white', alpha=0.5)
+    
+    # place a text box in upper left in axes coords
+    ax[0][0].text(0.05, 0.95, textstr_ion_sun, transform=ax[0][0].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+    ax[0][1].text(0.05, 0.95, textstr_ion_moon, transform=ax[0][1].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+    ax[1][0].text(0.05, 0.95, textstr_sat_sun, transform=ax[1][0].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
+    ax[1][1].text(0.05, 0.95, textstr_sat_moon, transform=ax[1][1].transAxes, fontsize=14,
+            verticalalignment='top', bbox=props)
 
 
 def count_b0_t_spreading_for_month(
@@ -111,65 +160,6 @@ def count_b0_t_spreading_for_year(ursi: str, year: int=2019) -> list[float]:
             pass
     
     return sun_result, moon_result
-
-def calc_b0_ab_mean_for_day(
-    ursi: str,
-    date: str,
-):
-    data = select_2h_avr_for_day_with_sat_tec(ursi, date)
-    df = cast_data_to_dataframe(
-        data,
-        columns=['hour', 'f0f2', 'ion_tec', 'sat_tec', 'b0'],
-        sat_tec=True,
-    )
-    
-    sun, moon = split_df_to_sun_moon(df, ursi, date)
-
-    mlr = lambda df, tec_name, turn: make_linear_regression(
-        y=df['b0'],
-        x=df[tec_name],
-        const=True,
-        turn=turn
-    )
-
-    ion_reg_sun = mlr(sun, 'ion_tec', False)
-    ion_sun_b, ion_sun_a = ion_reg_sun.params
-    ion_sun_b_err, ion_sun_a_err = ion_reg_sun.bse
-
-    ion_reg_moon = mlr(moon, 'ion_tec', True)
-    ion_moon_b, ion_moon_a = ion_reg_moon.params
-    ion_moon_b_err, ion_moon_a_err = ion_reg_moon.bse
-
-    sat_reg_sun = mlr(sun, 'sat_tec', False)
-    sat_sun_b, sat_sun_a = sat_reg_sun.params
-    sat_sun_b_err, sat_sun_a_err = sat_reg_sun.bse
-
-    sat_reg_moon = mlr(moon, 'sat_tec', True)
-    sat_moon_b, sat_moon_a = sat_reg_moon.params
-    sat_moon_b_err, sat_moon_a_err = sat_reg_moon.bse
-
-    return {
-        'ion': {
-            'sun': {
-                'a': {'value': ion_sun_a, 'err': ion_sun_a_err},
-                'b': {'value': ion_sun_b, 'err': ion_sun_b_err},
-            },
-            'moon': {
-                'a': {'value': ion_moon_a, 'err': ion_moon_a_err},
-                'b': {'value': ion_moon_b, 'err': ion_moon_b_err},
-            },
-        },
-        'sat': {
-            'sun': {
-                'a': {'value': sat_sun_a, 'err': sat_sun_a_err},
-                'b': {'value': sat_sun_b, 'err': sat_sun_b_err},
-            },
-            'moon': {
-                'a': {'value': sat_moon_a, 'err': sat_moon_a_err},
-                'b': {'value': sat_moon_b, 'err': sat_moon_b_err},
-            },
-        },
-    }
 
 
 def calc_b0_ab_mean_for_month(
@@ -336,7 +326,8 @@ def plot_b0_t_spreading_for_summer_winter(
             verticalalignment='top', bbox=props)
     ax[1][1].text(0.05, 0.95, textstr_win_moon, transform=ax[1][1].transAxes, fontsize=14,
             verticalalignment='top', bbox=props)
-    
+
+
 def plot_b0_t_spreading_for_year(ursi: str, year: int=2019):
     coords = select_coords_by_ursi(ursi)
     

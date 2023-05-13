@@ -42,6 +42,8 @@ def plot_graph(
         turn: bool=False,
         moon: bool=False,
         solid: bool=False,
+        tang_name: str='k',
+        const_name: str='const',
 ) -> Ax:
     props = dict(boxstyle='round', facecolor='white', alpha=0.5)
 
@@ -56,8 +58,8 @@ def plot_graph(
                 linspace = np.linspace(0, max(x_ax), 100)
                 ax.plot(linspace, reg.predict(sm.add_constant(linspace)), c=edgecolor)
 
-            title =  title + f"k={round(reg.params[1], 1)}, k_err={round(reg.bse[1], 1)},\n\
-const={round(reg.params[0], 1)}, const_err={round(reg.bse[0], 1)}"
+            title =  title + f"{tang_name}={round(reg.params[1], 1)}, {tang_name}_err={round(reg.bse[1], 1)},\n\
+{const_name}={round(reg.params[0], 1)}, {const_name}_err={round(reg.bse[0], 1)}"
 
             ax.text(
                 0.05, 0.9 if moon else 0.95, title, transform=ax.transAxes,
@@ -69,7 +71,7 @@ const={round(reg.params[0], 1)}, const_err={round(reg.bse[0], 1)}"
             linspace = np.linspace(0, max(x_ax), 100)
             ax.plot(linspace, reg.predict(linspace), c=edgecolor)
 
-            title = f"{title}, k={round(reg.params[0], 3)}, k_err={round(reg.bse[0], 3)}"
+            title = f"{title} {tang_name}={round(reg.params[0], 3)}, {tang_name}_err={round(reg.bse[0], 3)}"
 
             ax.text(
                 0.05, 0.9 if moon else 0.95, title, transform=ax.transAxes,
@@ -151,7 +153,7 @@ def plot_tec_graph(
     date: str,
     split: bool=True,
     xlim=(None, 15),
-    ylim=(None, 300),
+    ylim=(None, 30),
     regression: bool=True,
     const: bool=False,
     sat_tec: bool=False,
@@ -195,7 +197,7 @@ def plot_tec_graph(
         y_name=value,
         x_label='TEC',
         y_label=y_label,
-        title='Sun ' + date,
+        title='Sun ' + date + '\n',
         color='orange',
         edgecolor='r',
         regression=regression,
@@ -208,7 +210,7 @@ def plot_tec_graph(
         y_name=value,
         x_label='TEC',
         y_label=y_label,
-        title='Moon ' + date,
+        title='Moon ' + date + '\n',
         color='purple',
         edgecolor='b',
         regression=regression,
@@ -264,7 +266,7 @@ def subplot_tec_graph(
         y_name=value,
         x_label='TEC',
         y_label=y_label,
-        title='Sun ' + date,
+        title='Sun ' + date + '\n',
         color='orange',
         edgecolor='r',
         regression=regression,
@@ -277,7 +279,7 @@ def subplot_tec_graph(
         y_name=value,
         x_label='TEC',
         y_label=y_label,
-        title='Moon ' + date,
+        title='Moon ' + date + '\n',
         color='purple',
         edgecolor='b',
         regression=regression,
@@ -415,7 +417,7 @@ def plot_tec_f0f2_for_day_graph(
     ax = None,
     split = True,
     xlim=(None, 15),
-    ylim=(None, 300),
+    ylim=(None, 30),
     regression: bool=True,
     const: bool=False,
     sat_tec: bool=False,
@@ -490,7 +492,7 @@ def plot_tec_b0_for_each_day_in_month_graph(
     year: int,
     split=True,
     xlim=(None, 15),
-    ylim=(None, 30),
+    ylim=(None, 300),
     regression: bool=True,
     const: bool=False,
     sat_tec: bool=False,
